@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AskWell — learn to use AI, one small step at a time</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Noto+Sans+Devanagari:wght@400;700&family=Noto+Sans+Telugu:wght@400;700&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F8FB; --surface:#FFFFFF; --sky:#DCE8FF; --ink:#1F2A5C; --text:#22283A; --muted:#5B6478;
+  --line:#D9DFEA; --sun:#F2B705; --sun-soft:#FFF3C4; --leaf:#1E8F6F; --leaf-soft:#D6F2E8; --warn:#B4441F; --warn-soft:#FBE3DA;
+  --focus:#3D5BD9;
+  --body:"Atkinson Hyperlegible","Noto Sans Devanagari","Noto Sans Telugu","Noto Sans Arabic",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:"Bricolage Grotesque","Noto Sans Devanagari","Noto Sans Telugu","Noto Sans Arabic","Trebuchet MS",system-ui,sans-serif;
+  color-scheme:light; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#121726; --surface:#1B2236; --sky:#26315A; --ink:#AFC2FF; --text:#E8ECF6; --muted:#A3ACC2;
+    --line:#2E3854; --sun:#F5C842; --sun-soft:#3A3315; --leaf:#4CC9A4; --leaf-soft:#173A31; --warn:#F08A66; --warn-soft:#3D2219;
+    --focus:#9DB4FF; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121726; --surface:#1B2236; --sky:#26315A; --ink:#AFC2FF; --text:#E8ECF6; --muted:#A3ACC2;
+  --line:#2E3854; --sun:#F5C842; --sun-soft:#3A3315; --leaf:#4CC9A4; --leaf-soft:#173A31; --warn:#F08A66; --warn-soft:#3D2219;
+  --focus:#9DB4FF; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 8rem)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);font-size:1.0625rem;line-height:1.65}
+h1,h2,h3{font-family:var(--display);color:var(--ink);line-height:1.2;margin:0 0 .5em}
+h1{font-size:clamp(2rem,6vw,3.1rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(1.45rem,4vw,1.9rem);font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.2rem;font-weight:700}
+p{margin:0 0 1em;max-width:64ch}
+a{color:var(--ink)}
+button,textarea,input{font:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:6px}
+img,canvas{max-width:100%}
+[hidden]{display:none !important}
+
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar-in{max-width:1080px;margin:0 auto;padding:.6rem 1.25rem;display:flex;align-items:center;gap:.75rem 1rem;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:800;font-size:1.35rem;color:var(--ink);text-decoration:none;letter-spacing:-.02em}
+.brand span{display:inline-block;width:.55em;height:.55em;border-radius:50%;background:var(--sun);margin-inline-start:.15em;vertical-align:.05em}
+.settings{display:flex;gap:.5rem;margin-inline-start:auto;flex-wrap:wrap;align-items:center}
+.settings select{border:2px solid var(--line);background:var(--surface);color:var(--text);border-radius:10px;padding:.3rem .5rem;font-weight:700;font-size:.92rem;max-width:11rem}
+.sizes{display:flex;border:2px solid var(--line);border-radius:10px;overflow:hidden}
+.sizes button{border:0;background:transparent;color:var(--text);padding:.25rem .55rem;cursor:pointer;font-weight:700;line-height:1}
+.sizes button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.skip{position:absolute;inset-inline-start:1rem;top:-4rem;z-index:20;background:var(--ink);color:var(--bg);padding:.6rem 1rem;border-radius:10px;font-weight:700;text-decoration:none}
+.skip:focus{top:calc(env(safe-area-inset-top,0px) + .5rem)}
+footer.site{max-width:1080px;margin:0 auto;padding:1.5rem 1.25rem 3rem;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}
+footer.site p{margin:0}
+main:focus{outline:none}
+.meter{display:flex;align-items:center;gap:.5rem;font-size:.92rem;color:var(--muted)}
+.meter-track{width:72px;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.meter-fill{height:100%;background:var(--leaf);width:0;transition:width .4s}
+nav.main{flex-basis:100%;display:flex;gap:.25rem;overflow-x:auto;scrollbar-width:none;margin:0 -.25rem}
+nav.main::-webkit-scrollbar{display:none}
+nav.main a{white-space:nowrap;text-decoration:none;padding:.35rem .75rem;border-radius:999px;color:var(--muted);font-weight:700}
+nav.main a[aria-current="page"]{background:var(--sky);color:var(--ink)}
+
+main{max-width:1080px;margin:0 auto;padding:2rem 1.25rem 4rem}
+.lede{font-size:1.2rem;color:var(--muted)}
+.note{font-size:.93rem;color:var(--muted)}
+.en-only{display:inline-block;background:var(--sun-soft);padding:.3rem .7rem;border-radius:10px;font-size:.93rem}
+.btn{display:inline-flex;align-items:center;gap:.5rem;border:0;border-radius:12px;padding:.75rem 1.2rem;font-weight:700;cursor:pointer;text-decoration:none;justify-content:center}
+.btn-primary{background:var(--ink);color:var(--bg)}
+.btn-soft{background:var(--sky);color:var(--ink)}
+.btn-line{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn-small{padding:.4rem .8rem;font-size:.9rem;border-radius:10px}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.row{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center}
+
+.hero{display:grid;grid-template-columns:1fr;gap:2rem;align-items:start;margin-bottom:3rem}
+@media (min-width:880px){.hero{grid-template-columns:1fr 1.1fr}}
+
+/* Practice box */
+.kitchen{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:1.25rem}
+.kitchen label{font-weight:700;display:block;margin-bottom:.4rem}
+.kitchen textarea{width:100%;min-height:120px;resize:vertical;border:2px solid var(--line);border-radius:14px;padding:.85rem 1rem;background:var(--bg);color:var(--text);line-height:1.5}
+.kitchen textarea:focus{border-color:var(--focus);outline:none}
+.ingredients{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem;margin:1rem 0}
+@media (min-width:560px){.ingredients{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.ing{border:2px dashed var(--line);border-radius:14px;padding:.6rem .7rem;transition:background .25s,border-color .25s,transform .25s}
+.ing b{display:block;font-family:var(--display);font-size:1.05rem;color:var(--muted)}
+.ing small{color:var(--muted);font-size:.85rem;line-height:1.35;display:block}
+.ing.on{border-style:solid;border-color:var(--leaf);background:var(--leaf-soft)}
+.ing.on b{color:var(--leaf)}
+.ing.on b::after{content:" ✓"}
+@media (prefers-reduced-motion:no-preference){.ing.pop{transform:scale(1.04)}}
+.score{font-weight:700;color:var(--ink);margin:0 0 .75rem}
+.out{margin-top:1rem;border-radius:14px;padding:1rem;background:var(--bg);border:1px solid var(--line);white-space:pre-wrap}
+.out h3{margin-bottom:.35rem}
+
+/* Lesson path */
+.path{list-style:none;padding:0;margin:1.5rem 0 0;display:grid;gap:.75rem}
+.step{display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:center;padding:1rem 1.1rem;border-radius:16px;background:var(--surface);border:1px solid var(--line);text-decoration:none;color:var(--text)}
+.step:hover{border-color:var(--ink)}
+.num{width:2.6rem;height:2.6rem;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;background:var(--sky);color:var(--ink);font-size:1.15rem}
+.step.done .num{background:var(--leaf);color:var(--surface)}
+.step h3{margin:0}
+.step p{margin:0;color:var(--muted);font-size:.95rem}
+.mins{color:var(--muted);font-size:.9rem;white-space:nowrap}
+.cert-cta{margin-top:1.25rem;padding:1.1rem 1.25rem;border-radius:16px;background:var(--sun-soft);border:2px solid var(--sun);display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between}
+.cert-cta p{margin:0;font-weight:700}
+
+/* Lesson */
+.lesson{display:grid;gap:2rem}
+@media (min-width:920px){.lesson{grid-template-columns:1fr 1fr}}
+.back{display:inline-block;margin-bottom:1rem;color:var(--muted);text-decoration:none;font-weight:700}
+.compare{display:grid;gap:.75rem;margin:1.25rem 0}
+.ex{border-radius:14px;padding:.85rem 1rem;border-inline-start:6px solid}
+.ex.weak{border-color:var(--warn);background:var(--surface)}
+.ex.strong{border-color:var(--leaf);background:var(--leaf-soft)}
+.ex b{display:block;font-size:.9rem;margin-bottom:.2rem}
+.tip{background:var(--sun-soft);border-radius:14px;padding:.85rem 1rem;margin-top:1rem}
+.task{font-weight:700;color:var(--ink)}
+.quiz{margin-top:1.5rem;background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:1.25rem}
+.quiz fieldset{border:0;margin:0 0 1rem;padding:.75rem;border-radius:12px}
+.quiz fieldset.wrong{background:var(--warn-soft)}
+.quiz fieldset.right{background:var(--leaf-soft)}
+.quiz legend{font-weight:700;padding:0;margin-bottom:.4rem;float:left;width:100%}
+.quiz label{display:flex;gap:.6rem;align-items:flex-start;padding:.35rem 0;cursor:pointer;clear:both}
+.quiz input{margin-top:.35rem;accent-color:var(--ink);width:1.1rem;height:1.1rem;flex:none}
+.quiz-msg{font-weight:700;margin:.75rem 0 0}
+.quiz-msg.ok{color:var(--leaf)} .quiz-msg.bad{color:var(--warn)}
+.rate{margin-top:1.25rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.rate p{margin:0;font-weight:700}
+
+/* Lists, chips, cards */
+.filters{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0 1.25rem}
+.chip{border:2px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:.4rem .9rem;cursor:pointer;font-weight:700}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tools{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.tool{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:1rem 1.1rem;display:flex;flex-direction:column}
+.tool h3{margin:.1rem 0 .4rem}
+.tool .job,.tool .where{margin:0 0 .35rem;font-size:.95rem}
+.tool .where{color:var(--muted)}
+.tool .who{font-size:.92rem;color:var(--muted);margin:.35rem 0 .5rem}
+.tool .warn{margin:.2rem 0;font-size:.9rem;font-weight:700;color:var(--warn)}
+.tool details{border-top:1px solid var(--line);padding:.5rem 0}
+.tool summary{cursor:pointer;font-weight:700;color:var(--ink)}
+.tool .how{margin:.5rem 0 0;padding-inline-start:1.25rem;font-size:.95rem}
+.tool .how li{margin-bottom:.3rem}
+.links{display:flex;flex-direction:column;gap:.4rem;margin-top:.5rem}
+.links a{display:flex;justify-content:space-between;align-items:center;gap:.5rem;text-decoration:none;font-weight:700;font-size:.95rem;padding:.5rem .75rem;border-radius:10px;background:var(--bg);border:1px solid var(--line);color:var(--ink)}
+.links a:hover{border-color:var(--ink)}
+.links a span{font-weight:400;color:var(--muted);font-size:.82rem}
+.tool .open{margin-top:auto}
+.tool .foot{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-top:.6rem;font-size:.82rem;color:var(--muted)}
+.linkbtn{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:.82rem}
+.badge{display:inline-block;font-size:.82rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;margin-bottom:.5rem;align-self:flex-start}
+.badge.cat{background:var(--sky);color:var(--ink)}
+.badge.free{background:var(--leaf-soft);color:var(--leaf)}
+.badge.fee{background:var(--sun-soft);color:var(--text)}
+.search{display:block;margin:1rem 0 .25rem}
+.search input,.field input{width:100%;max-width:560px;padding:.75rem 1rem;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--text)}
+.search input:focus,.field input:focus{border-color:var(--focus);outline:none}
+.academy{display:grid;gap:1rem;align-items:center;margin:0 0 1.5rem;padding:1.25rem;border-radius:18px;background:var(--sun-soft);border:2px solid var(--sun)}
+@media (min-width:720px){.academy{grid-template-columns:1fr auto}}
+.academy h2{margin-bottom:.25rem}
+.academy p{margin:0}
+.cert .co{font-size:.92rem;color:var(--muted);margin:0 0 .2rem}
+.cert .facts{font-size:.92rem;color:var(--muted);margin:.25rem 0 .9rem}
+.cert .btn-soft{margin-top:auto}
+.price-row{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+.price{font-family:var(--display);font-weight:800;font-size:1.25rem;color:var(--ink);text-align:right}
+.pop{position:relative}
+.pop-btn{display:inline-flex;align-items:center;gap:.3rem;border:2px solid var(--line);background:var(--surface);color:var(--text);border-radius:10px;padding:.3rem .6rem;font-weight:700;font-size:.92rem;cursor:pointer}
+.pop-btn[aria-expanded="true"]{border-color:var(--ink)}
+.pop-btn .chev{font-size:.85rem;color:var(--muted)}
+.pop-btn .count{display:inline-grid;place-items:center;min-width:1.4rem;height:1.4rem;padding:0 .3rem;border-radius:999px;background:var(--leaf);color:var(--surface);font-size:.8rem}
+.pop-panel{position:absolute;top:calc(100% + .4rem);inset-inline-start:0;z-index:30;background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:.4rem;min-width:11rem;display:flex;flex-direction:column;gap:.15rem;box-shadow:0 10px 30px rgba(20,30,60,.18)}
+.pop-wide{min-width:min(17rem,88vw);max-width:min(22rem,88vw);padding:.9rem;gap:.6rem}
+@media (min-width:860px){.pop-wide{inset-inline-start:auto;inset-inline-end:0}}
+.pop-item{text-align:start;border:0;background:transparent;color:var(--text);padding:.5rem .7rem;border-radius:10px;cursor:pointer;font-weight:700}
+.pop-item:hover,.pop-item:focus-visible{background:var(--sky)}
+.pop-item[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.pop-title{margin:0;font-weight:700;color:var(--ink)}
+.pop-empty{margin:0;color:var(--muted)}
+.pop-list{margin:0;padding-inline-start:1.1rem}
+.pop-list li{margin-bottom:.3rem}
+.pop-list span{color:var(--muted);font-size:.9rem}
+.pop-link{font-size:.92rem}
+.acct-grid{display:grid;gap:1.25rem;margin-top:1.5rem}
+@media (min-width:860px){.acct-grid{grid-template-columns:1fr 1fr}}
+.acct-card{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:1.25rem}
+.acct-card select{width:100%;max-width:560px;padding:.7rem 1rem;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--text)}
+.cert .earn{margin-top:.5rem}
+.cert .earn[aria-pressed="true"]{background:var(--leaf-soft);border-color:var(--leaf);color:var(--leaf)}
+.honest{margin-top:2rem;padding:1rem 1.1rem;border-radius:16px;background:var(--sky);color:var(--text)}
+.honest p{margin:0}
+
+/* Finder */
+.qblock{margin:1.5rem 0}
+.qblock h2{font-size:1.25rem}
+.result-why{font-size:.92rem;color:var(--muted);margin:0 0 .5rem}
+
+/* Templates */
+.tpl{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:1rem 1.1rem;display:flex;flex-direction:column;gap:.6rem}
+.tpl h3{margin:0}
+.tpl pre{margin:0;white-space:pre-wrap;font-family:var(--body);background:var(--bg);border-radius:10px;padding:.75rem;font-size:.95rem;border:1px solid var(--line)}
+.tpl .row{gap:.5rem;margin-top:auto}
+.pack-title{margin-top:2.25rem}
+
+/* Certificate */
+.field{display:block;margin:1rem 0}
+.field span{display:block;font-weight:700;margin-bottom:.35rem}
+.cert-preview{margin-top:1.5rem;border-radius:14px;border:1px solid var(--line);background:#fff;display:block;width:100%;max-width:800px}
+
+/* About */
+.about{max-width:70ch}
+.about h2{margin-top:2rem}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</head>
+<body>
+<a class="skip" href="#" id="skipLink" data-i18n="skip"></a>
+<header class="bar">
+  <div class="bar-in">
+    <a class="brand" href="#home">AskWell<span aria-hidden="true"></span></a>
+    <div class="settings">
+      <div class="pop" id="langPop"><button class="pop-btn" id="langBtn" aria-haspopup="listbox" aria-expanded="false" aria-controls="langList"></button><div class="pop-panel" id="langList" role="listbox" hidden></div></div>
+      <label><span class="sr" data-i18n="countryLabel"></span><select id="regionSel"></select></label>
+      <div class="sizes" role="group" id="sizeGroup"><button data-size="0">A</button><button data-size="1">A+</button><button data-size="2">A++</button></div>
+    </div>
+    <div class="pop" id="certPop"><button class="pop-btn" id="certBtn" aria-haspopup="true" aria-expanded="false" aria-controls="certPanel"></button><div class="pop-panel pop-wide" id="certPanel" hidden></div></div>
+    <a class="btn btn-primary btn-small" id="acctBtn" href="#account"></a>
+    <nav class="main" aria-label="Main">
+      <a href="#home" data-nav="home" data-i18n="navLessons"></a>
+      <a href="#finder" data-nav="finder" data-i18n="navFinder"></a>
+      <a href="#templates" data-nav="templates" data-i18n="navTemplates"></a>
+      <a href="#tools" data-nav="tools" data-i18n="navTools"></a>
+      <a href="#certificates" data-nav="certificates" data-i18n="navCerts"></a>
+      <a href="#my-certificate" data-nav="my-certificate" data-i18n="navMyCert"></a>
+      <a href="#about" data-nav="about" data-i18n="navAbout"></a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" tabindex="-1">
+  <section class="view" id="view-home">
+    <div class="hero">
+      <div>
+        <h1 data-i18n="heroTitle"></h1>
+        <p class="lede" data-i18n="heroLede"></p>
+        <p data-i18n="heroHint"></p>
+        <div class="row"><a class="btn btn-primary" href="#lesson-1" data-i18n="startLesson"></a><a class="btn btn-line" href="#finder" data-i18n="findTool"></a></div>
+      </div>
+      <div id="heroKitchen"></div>
+    </div>
+    <h2 data-i18n="pathTitle"></h2>
+    <p data-i18n="pathSub"></p>
+    <ol class="path" id="path"></ol>
+    <div class="cert-cta" id="homeCert" hidden><p data-i18n="certReadyShort"></p><a class="btn btn-primary" href="#my-certificate" data-i18n="getCert"></a></div>
+  </section>
+
+  <section class="view" id="view-lesson" hidden>
+    <a class="back" href="#home" data-i18n="allLessons"></a>
+    <div class="lesson">
+      <div>
+        <div id="lessonBody"></div>
+        <div class="row" style="margin-top:1rem">
+          <button class="btn btn-line btn-small" id="listenBtn" data-i18n="listen"></button>
+        </div>
+        <p class="note" id="voiceNote" hidden></p>
+      </div>
+      <div>
+        <div id="lessonKitchen"></div>
+        <div class="quiz" id="quiz"></div>
+        <div class="rate" id="rate" hidden>
+          <p data-i18n="helpful"></p>
+          <button class="btn btn-soft btn-small" data-rate="1" data-i18n="yes"></button>
+          <button class="btn btn-line btn-small" data-rate="0" data-i18n="no"></button>
+        </div>
+        <div class="row" style="margin-top:1rem"><a class="btn btn-line" id="nextLink" href="#home"></a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="view-finder" hidden>
+    <h1 data-i18n="fTitle"></h1>
+    <p class="lede" data-i18n="fLede"></p>
+    <div class="qblock"><h2 data-i18n="fQ1"></h2><div class="filters" role="group" id="fGoal"></div></div>
+    <div class="qblock"><h2 data-i18n="fQ2"></h2><div class="filters" role="group" id="fWho"></div></div>
+    <div class="qblock"><h2 data-i18n="fQ3"></h2><div class="filters" role="group" id="fDevice"></div></div>
+    <div class="row"><button class="btn btn-primary" id="fShow" data-i18n="fShow"></button></div>
+    <p class="quiz-msg bad" id="fMsg" hidden></p>
+    <div id="fResult" hidden style="margin-top:2rem">
+      <h2 data-i18n="fResult"></h2>
+      <p class="note en-only" data-i18n="detailsEn"></p>
+      <div class="tools" id="fCards"></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-templates" hidden>
+    <h1 data-i18n="tTitle"></h1>
+    <p class="lede" data-i18n="tLede"></p>
+    <div id="tplKitchen"></div>
+    <div class="filters" role="group" id="tplFilters" style="margin-top:2rem"></div>
+    <div id="tplPacks"></div>
+  </section>
+
+  <section class="view" id="view-tools" hidden>
+    <h1 data-i18n="toolsTitle"></h1>
+    <p class="lede" data-i18n="toolsLede"></p>
+    <p class="note en-only" data-i18n="detailsEn"></p>
+    <div class="academy">
+      <div>
+        <h2>Start with a free official course</h2>
+        <p>Claude Academy is Anthropic’s free learning site, with courses that go from your first chat all the way to building apps with Claude.</p>
+      </div>
+      <a class="btn btn-primary" href="https://academy.claude.com" target="_blank" rel="noopener">Open Claude Academy</a>
+    </div>
+    <p class="note" id="toolsChecked"></p>
+    <label class="search"><span class="sr" data-i18n="searchLabel"></span><input id="toolSearch" type="search" autocomplete="off"></label>
+    <div class="filters" role="group" aria-label="Filter tools by category" id="filters"></div>
+    <p class="note" id="toolCount" aria-live="polite"></p>
+    <div class="tools" id="tools"></div>
+    <div class="honest">
+      <h3>Before you use any AI tool</h3>
+      <p>Check important facts yourself, don’t paste passwords, ID numbers, or bank details, and read the free plan limits. Tool names and prices change often, so look at each tool’s own website for the latest.</p>
+    </div>
+  </section>
+
+  <section class="view" id="view-certificates" hidden>
+    <h1>AI certificates from top companies</h1>
+    <p class="note en-only" data-i18n="pageEn"></p>
+    <p class="lede">Finished the lessons? Take your next step with a course from Anthropic, Google, Microsoft, IBM, or AWS. These are made for students and beginners, and a certificate is a nice thing to add to your resume or LinkedIn.</p>
+    <div class="filters" role="group" aria-label="Filter certificate courses" id="certFilters"></div>
+    <p class="note" id="certChecked"></p>
+    <div id="sec-free"><h2>Free course, free certificate</h2><div class="tools"></div></div>
+    <div id="sec-fee" style="margin-top:2.5rem"><h2>Free to learn, pay for the certificate</h2>
+      <p class="note">You can study every lesson for free. On Coursera, learners in India and many other countries can apply for financial aid, which can cover the fee.</p><div class="tools"></div></div>
+    <div id="sec-exam" style="margin-top:2.5rem"><h2>Paid certification exams</h2>
+      <p class="note">These are official, proctored exams that employers recognize. Prices are in US dollars and are charged in your local currency, plus tax, when you book.</p><div class="tools"></div></div>
+    <div class="honest">
+      <h3>Good to know</h3>
+      <p>A free certificate of completion shows you finished a course. A paid certification exam is proctored and tests what you know, so employers usually value it more. Start with the free courses, then take an exam when you feel ready. Prices and rules change, so always confirm on the official page before you pay.</p>
+    </div>
+  </section>
+
+  <section class="view" id="view-my-certificate" hidden>
+    <h1 data-i18n="certTitle"></h1>
+    <div id="certLocked">
+      <p class="lede" id="certLockedText"></p>
+      <a class="btn btn-primary" href="#home" data-i18n="navLessons"></a>
+    </div>
+    <div id="certReady" hidden>
+      <p class="lede" data-i18n="certReady"></p>
+      <label class="field"><span data-i18n="yourName"></span><input id="certName" type="text" maxlength="60" autocomplete="name"></label>
+      <div class="row">
+        <button class="btn btn-primary" id="makeCert" data-i18n="makeCert"></button>
+        <button class="btn btn-soft" id="dlCert" hidden data-i18n="download"></button>
+      </div>
+      <p class="note" id="certMsg" aria-live="polite"></p>
+      <img class="cert-preview" id="certImg" alt="" hidden>
+      <p class="note" data-i18n="certNote" style="margin-top:1rem"></p>
+    </div>
+  </section>
+
+  <section class="view" id="view-account" hidden><div id="acctBody"></div></section>
+
+  <section class="view" id="view-about" hidden>
+    <div class="about">
+      <h1 data-i18n="aTitle"></h1>
+      <p class="lede" data-i18n="aWho"></p>
+      <h2 data-i18n="aWhyH"></h2><p data-i18n="aWhy"></p>
+      <h2 data-i18n="aPrivH"></h2><p data-i18n="aPriv"></p>
+      <h2 data-i18n="aAccH"></h2><p data-i18n="aAcc"></p>
+      <a class="btn btn-line" href="https://github.com/Ananya-1910" target="_blank" rel="noopener" data-i18n="aGh"></a>
+    </div>
+  </section>
+</main>
+<footer class="site"><p data-i18n="notAff"></p></footer>
+<script>
+const STR = {
+en:{
+ navLessons:"Lessons", navFinder:"Tool finder", navTemplates:"Templates", navTools:"AI tools", navCerts:"Certificates", navMyCert:"My certificate", navAbout:"About",
+ progress:"{d} of {n} done",
+ heroTitle:"Talk to AI like you’d talk to a helpful friend.",
+ heroLede:"You don’t need to be technical. Learn how to ask Claude and other AI tools for exactly what you need, in seven short lessons.",
+ heroHint:"Every good request has four ingredients. Try typing one in the box and watch them light up.",
+ startLesson:"Start lesson 1", findTool:"Find the right tool",
+ pathTitle:"Your learning path", pathSub:"Each lesson takes about five minutes and ends with a short quiz.", min:"min",
+ allLessons:"‹ All lessons", weak:"Weak request", strong:"Strong request", tip:"Tip:", yourTurn:"Your turn: ",
+ listen:"Listen to this lesson", stop:"Stop listening",
+ noVoice:"Your device doesn’t have a voice for this language yet. Try Chrome on Android, or add the language in your phone’s text-to-speech settings.",
+ quizTitle:"Quick quiz", quizSub:"Answer both questions correctly to complete the lesson.", check:"Check answers",
+ quizPass:"All correct. Lesson complete!", quizRetry:"Not quite. Look at the highlighted question and try again.", quizMissing:"Pick an answer for each question.",
+ quizDone:"You’ve completed this lesson.",
+ next:"Next lesson", getCert:"Get your certificate", certReadyShort:"You finished all 7 lessons. Your certificate is ready.",
+ helpful:"Was this lesson helpful?", yes:"Yes", no:"Not really", thanks:"Thanks! Your feedback helps improve AskWell.",
+ kLabelHero:"Try it: write a request for Claude", kLabel:"Write your request",
+ kPlaceholder:"Example: Explain what a budget is to my 12-year-old in 3 short points, in a fun way.",
+ ingWhat:"What", ingWhatS:"The job you want done", ingBg:"Background", ingBgS:"Who it’s for or why", ingShape:"Shape", ingShapeS:"Length, list, steps", ingTone:"Tone", ingToneS:"Simple, friendly, formal",
+ scoreEmpty:"Start typing to see your ingredients.", scoreAll:"All four ingredients. That’s a great request.", scoreSome:"{n} of 4 ingredients.",
+ scoreLow:"Try adding who it’s for, or how long you want it.", scoreAlmost:"Almost there.",
+ coach:"Get coaching from Claude", run:"Send to Claude",
+ noSample:"Tip: open this app inside Claude to get live coaching and answers. The ingredient boxes work everywhere.",
+ thinking:"Thinking...", typeFirst:"Type a request first, then try again.",
+ unavail:"Live Claude answers aren’t available here, but the ingredient boxes still check your request.",
+ errDenied:"Claude wasn’t allowed for this page. You can still practice: the ingredient boxes work without it.",
+ errRate:"Lots of requests at once. Wait a minute, then try again.", errGen:"Claude couldn’t answer just now. Check your connection and try again.",
+ cWorked:"What worked", cTry:"One thing to try", cBetter:"A stronger version", cUse:"Use this version",
+ fTitle:"Find the right AI tool", fLede:"Answer three quick questions and get your top 3 tools.",
+ fQ1:"What do you want to do?", fQ2:"Who are you?", fQ3:"What will you use it on?", fShow:"Show my tools", fResult:"Your top 3 tools",
+ g_write:"Write or fix text", g_study:"Study or research", g_images:"Make images or posters", g_video:"Make or edit videos", g_slides:"Make a presentation",
+ g_meetings:"Take meeting or class notes", g_build:"Build an app or write code", g_language:"Translate or learn a language", g_voice:"Voice, audio, or music", g_automate:"Automate work or analyze data",
+ w_student:"Student", w_job:"Job seeker", w_business:"Shop or business owner", w_teacher:"Teacher", w_any:"Just curious",
+ d_phone:"Phone", d_computer:"Computer", d_both:"Both",
+ detailsEn:"", pageEn:"",
+ tTitle:"Ready-to-use prompt templates", tLede:"Copy a template, fill in the [brackets], and paste it into Claude. Or press “Practice with it” to try it right here.",
+ copy:"Copy", copied:"Copied", practice:"Practice with it",
+ p_students:"Students", p_job:"Job seekers", p_business:"Shop owners", p_teachers:"Teachers", p_everyday:"Everyday life", p_all:"All",
+ toolsTitle:"The AI tools directory", toolsLede:"66 popular AI tools that work really well, from chat assistants to video, music, and coding. Each one shows what it’s for, where you can use it, and how to start.",
+ searchLabel:"Search tools", searchPh:"Search tools, like “video”, “study”, or “translate”",
+ checked:"Tool details last checked: {d}", allCount:"All ({n})", showing:"Showing {n} tools", showingOne:"Showing 1 tool",
+ noMatch:"No tools match. Try another word, like “video”, “notes”, or “translate”.",
+ useFor:"Use it for:", where:"Where:", howStart:"How to start", videos:"Videos and courses", open:"Open {n}",
+ latest:"Latest tutorials", founder:"Founder talks", team:"Hear from the team", courses:"Full courses", newest:"newest first", byDevs:"by developers",
+ report:"Report a problem", reported:"Thanks, reported.",
+ certTitle:"Your AskWell certificate", certLocked:"Complete all 7 lessons to unlock your certificate. You’ve done {d} of 7.",
+ certReady:"You did it! Type your name the way you want it on your certificate.", yourName:"Your name",
+ makeCert:"Make my certificate", download:"Download certificate", nameNeeded:"Type your name first.", saved:"Saved to your device.",
+ saveHint:"To save it, long-press the image (phone) or right-click it (computer).",
+ certNote:"This is a certificate of completion from AskWell, not an industry certification. For those, see the Certificates page.",
+ aTitle:"About AskWell",
+ aWho:"AskWell was built by Ananya, a final-year B.Tech CSE (Data Science) student at VJIT, Hyderabad, to help anyone, of any age, learn to use AI with confidence.",
+ aWhyH:"Why it exists", aWhy:"Most AI guides are written for tech people. AskWell explains AI in plain words, in English, Hindi, and Telugu, with practice built in.",
+ aPrivH:"Your privacy", aPriv:"Your lesson progress and the name on your certificate are saved only in your own browser. When you press a Claude button, the text you typed is sent to Claude to get an answer. Lesson ratings and problem reports are saved without your name.",
+ aAccH:"How we keep it accurate", aAcc:"Tool details and course prices are checked by hand, and each page shows when they were last checked. If something looks wrong, tap “Report a problem” on any tool card.",
+ aGh:"See the code on GitHub"
+},
+hi:{
+ navLessons:"पाठ", navFinder:"टूल खोजें", navTemplates:"टेम्पलेट", navTools:"AI टूल्स", navCerts:"सर्टिफ़िकेट", navMyCert:"मेरा सर्टिफ़िकेट", navAbout:"परिचय",
+ progress:"{n} में से {d} पूरे",
+ heroTitle:"AI से ऐसे बात करें जैसे किसी मददगार दोस्त से करते हैं।",
+ heroLede:"आपको तकनीकी जानकार होने की ज़रूरत नहीं है। सात छोटे पाठों में सीखें कि Claude और दूसरे AI टूल्स से ठीक वही कैसे माँगें जो आपको चाहिए।",
+ heroHint:"हर अच्छी रिक्वेस्ट में चार चीज़ें होती हैं। बॉक्स में एक रिक्वेस्ट लिखकर देखें, वे चमकने लगेंगी।",
+ startLesson:"पाठ 1 शुरू करें", findTool:"सही टूल खोजें",
+ pathTitle:"आपका सीखने का रास्ता", pathSub:"हर पाठ लगभग पाँच मिनट का है और आख़िर में एक छोटा क्विज़ है।", min:"मिनट",
+ allLessons:"‹ सभी पाठ", weak:"कमज़ोर रिक्वेस्ट", strong:"मज़बूत रिक्वेस्ट", tip:"सुझाव:", yourTurn:"अब आपकी बारी: ",
+ listen:"यह पाठ सुनें", stop:"सुनना बंद करें",
+ noVoice:"आपके डिवाइस में अभी इस भाषा की आवाज़ नहीं है। Android पर Chrome आज़माएँ, या फ़ोन की टेक्स्ट-टू-स्पीच सेटिंग में भाषा जोड़ें।",
+ quizTitle:"छोटा क्विज़", quizSub:"पाठ पूरा करने के लिए दोनों सवालों के सही जवाब दें।", check:"जवाब जाँचें",
+ quizPass:"सब सही! पाठ पूरा हुआ!", quizRetry:"पूरी तरह सही नहीं। हाइलाइट किया गया सवाल देखें और फिर कोशिश करें।", quizMissing:"हर सवाल का एक जवाब चुनें।",
+ quizDone:"आप यह पाठ पूरा कर चुके हैं।",
+ next:"अगला पाठ", getCert:"अपना सर्टिफ़िकेट पाएँ", certReadyShort:"आपने सभी 7 पाठ पूरे कर लिए। आपका सर्टिफ़िकेट तैयार है।",
+ helpful:"क्या यह पाठ मददगार था?", yes:"हाँ", no:"ज़्यादा नहीं", thanks:"धन्यवाद! आपकी राय से AskWell बेहतर होता है।",
+ kLabelHero:"आज़माएँ: Claude के लिए एक रिक्वेस्ट लिखें", kLabel:"अपनी रिक्वेस्ट लिखें",
+ kPlaceholder:"उदाहरण: मेरे 12 साल के बच्चे को बजट क्या होता है, 3 छोटे बिंदुओं में मज़ेदार तरीके से समझाओ।",
+ ingWhat:"क्या", ingWhatS:"आप क्या करवाना चाहते हैं", ingBg:"पृष्ठभूमि", ingBgS:"किसके लिए या क्यों", ingShape:"रूप", ingShapeS:"लंबाई, सूची, कदम", ingTone:"लहजा", ingToneS:"आसान, दोस्ताना, औपचारिक",
+ scoreEmpty:"अपनी चीज़ें देखने के लिए लिखना शुरू करें।", scoreAll:"चारों चीज़ें मौजूद हैं। बहुत बढ़िया रिक्वेस्ट!", scoreSome:"4 में से {n} चीज़ें।",
+ scoreLow:"जोड़ें कि यह किसके लिए है, या जवाब कितना लंबा चाहिए।", scoreAlmost:"बस थोड़ा और।",
+ coach:"Claude से सलाह लें", run:"Claude को भेजें",
+ noSample:"सुझाव: लाइव सलाह और जवाब पाने के लिए यह ऐप Claude के अंदर खोलें। चीज़ों वाले बॉक्स हर जगह काम करते हैं।",
+ thinking:"सोच रहा है...", typeFirst:"पहले एक रिक्वेस्ट लिखें, फिर कोशिश करें।",
+ unavail:"यहाँ Claude के लाइव जवाब उपलब्ध नहीं हैं, पर चीज़ों वाले बॉक्स आपकी रिक्वेस्ट जाँचते रहेंगे।",
+ errDenied:"इस पेज के लिए Claude की अनुमति नहीं दी गई। आप फिर भी अभ्यास कर सकते हैं: चीज़ों वाले बॉक्स इसके बिना भी काम करते हैं।",
+ errRate:"एक साथ बहुत सारी रिक्वेस्ट हैं। एक मिनट रुककर फिर कोशिश करें।", errGen:"Claude अभी जवाब नहीं दे सका। अपना इंटरनेट जाँचें और फिर कोशिश करें।",
+ cWorked:"क्या अच्छा था", cTry:"एक चीज़ आज़माएँ", cBetter:"बेहतर रूप", cUse:"यह रूप इस्तेमाल करें",
+ fTitle:"सही AI टूल खोजें", fLede:"तीन छोटे सवालों के जवाब दें और अपने टॉप 3 टूल पाएँ।",
+ fQ1:"आप क्या करना चाहते हैं?", fQ2:"आप कौन हैं?", fQ3:"आप किस पर इस्तेमाल करेंगे?", fShow:"मेरे टूल दिखाएँ", fResult:"आपके टॉप 3 टूल",
+ g_write:"टेक्स्ट लिखना या सुधारना", g_study:"पढ़ाई या रिसर्च", g_images:"इमेज या पोस्टर बनाना", g_video:"वीडियो बनाना या एडिट करना", g_slides:"प्रेज़ेंटेशन बनाना",
+ g_meetings:"मीटिंग या क्लास के नोट्स", g_build:"ऐप बनाना या कोड लिखना", g_language:"अनुवाद या नई भाषा सीखना", g_voice:"आवाज़, ऑडियो या संगीत", g_automate:"काम ऑटोमेट करना या डेटा एनालिसिस",
+ w_student:"छात्र", w_job:"नौकरी ढूँढ रहे हैं", w_business:"दुकान या बिज़नेस मालिक", w_teacher:"शिक्षक", w_any:"बस जानना है",
+ d_phone:"फ़ोन", d_computer:"कंप्यूटर", d_both:"दोनों",
+ detailsEn:"टूल की जानकारी अभी अंग्रेज़ी में है।", pageEn:"यह पेज अभी अंग्रेज़ी में है।",
+ tTitle:"तैयार प्रॉम्प्ट टेम्पलेट", tLede:"एक टेम्पलेट कॉपी करें, [ब्रैकेट] भरें, और Claude में पेस्ट करें। या “इससे अभ्यास करें” दबाकर यहीं आज़माएँ। आप हिन्दी में भी लिख सकते हैं।",
+ copy:"कॉपी करें", copied:"कॉपी हो गया", practice:"इससे अभ्यास करें",
+ p_students:"छात्र", p_job:"नौकरी ढूँढने वाले", p_business:"दुकानदार", p_teachers:"शिक्षक", p_everyday:"रोज़मर्रा", p_all:"सभी",
+ toolsTitle:"AI टूल्स की सूची", toolsLede:"66 लोकप्रिय AI टूल्स, जो सच में अच्छा काम करते हैं। हर टूल के साथ लिखा है कि वह किस काम का है, कहाँ मिलता है, और कैसे शुरू करें।",
+ searchLabel:"टूल खोजें", searchPh:"टूल खोजें, जैसे “video” या “translate”",
+ checked:"टूल की जानकारी आख़िरी बार जाँची गई: {d}", allCount:"सभी ({n})", showing:"{n} टूल दिख रहे हैं", showingOne:"1 टूल दिख रहा है",
+ noMatch:"कोई टूल नहीं मिला। कोई और शब्द आज़माएँ, जैसे “video”, “notes” या “translate”।",
+ useFor:"किस काम का:", where:"कहाँ:", howStart:"कैसे शुरू करें", videos:"वीडियो और कोर्स", open:"{n} खोलें",
+ latest:"नए ट्यूटोरियल", founder:"फ़ाउंडर से बातचीत", team:"टीम से सुनें", courses:"पूरे कोर्स", newest:"नए पहले", byDevs:"डेवलपर्स द्वारा",
+ report:"समस्या बताएँ", reported:"धन्यवाद, बता दिया गया।",
+ certTitle:"आपका AskWell सर्टिफ़िकेट", certLocked:"सर्टिफ़िकेट पाने के लिए सभी 7 पाठ पूरे करें। आपने 7 में से {d} पूरे किए हैं।",
+ certReady:"आपने कर दिखाया! सर्टिफ़िकेट पर जैसा नाम चाहिए, वैसा लिखें।", yourName:"आपका नाम",
+ makeCert:"मेरा सर्टिफ़िकेट बनाएँ", download:"सर्टिफ़िकेट डाउनलोड करें", nameNeeded:"पहले अपना नाम लिखें।", saved:"आपके डिवाइस में सेव हो गया।",
+ saveHint:"सेव करने के लिए, इमेज को देर तक दबाएँ (फ़ोन) या राइट-क्लिक करें (कंप्यूटर)।",
+ certNote:"यह AskWell का कोर्स पूरा करने का सर्टिफ़िकेट है, कोई इंडस्ट्री सर्टिफ़िकेशन नहीं। उनके लिए सर्टिफ़िकेट पेज देखें।",
+ aTitle:"AskWell के बारे में",
+ aWho:"AskWell को Ananya ने बनाया है, जो VJIT, हैदराबाद में B.Tech CSE (Data Science) की अंतिम वर्ष की छात्रा हैं, ताकि किसी भी उम्र का कोई भी व्यक्ति भरोसे के साथ AI इस्तेमाल करना सीख सके।",
+ aWhyH:"यह क्यों है", aWhy:"ज़्यादातर AI गाइड तकनीकी लोगों के लिए लिखी जाती हैं। AskWell AI को आसान शब्दों में, अंग्रेज़ी, हिन्दी और तेलुगु में, अभ्यास के साथ समझाता है।",
+ aPrivH:"आपकी प्राइवेसी", aPriv:"आपकी पाठ की प्रगति और सर्टिफ़िकेट पर नाम सिर्फ़ आपके अपने ब्राउज़र में सेव होते हैं। जब आप Claude वाला बटन दबाते हैं, तो आपका लिखा टेक्स्ट जवाब के लिए Claude को भेजा जाता है। पाठ की रेटिंग और समस्या की रिपोर्ट आपके नाम के बिना सेव होती हैं।",
+ aAccH:"हम इसे सही कैसे रखते हैं", aAcc:"टूल की जानकारी और कोर्स की कीमतें हाथ से जाँची जाती हैं, और हर पेज पर लिखा होता है कि आख़िरी बार कब जाँची गईं। अगर कुछ गलत लगे, तो किसी भी टूल कार्ड पर “समस्या बताएँ” दबाएँ।",
+ aGh:"GitHub पर कोड देखें"
+},
+te:{
+ navLessons:"పాఠాలు", navFinder:"టూల్ ఫైండర్", navTemplates:"టెంప్లేట్లు", navTools:"AI టూల్స్", navCerts:"సర్టిఫికెట్లు", navMyCert:"నా సర్టిఫికెట్", navAbout:"మా గురించి",
+ progress:"{n}లో {d} పూర్తయ్యాయి",
+ heroTitle:"సహాయం చేసే స్నేహితుడితో మాట్లాడినట్లే AIతో మాట్లాడండి.",
+ heroLede:"మీకు టెక్నికల్ జ్ఞానం అవసరం లేదు. ఏడు చిన్న పాఠాల్లో, Claude మరియు ఇతర AI టూల్స్ నుంచి మీకు కావాల్సింది సరిగ్గా ఎలా అడగాలో నేర్చుకోండి.",
+ heroHint:"ప్రతి మంచి అభ్యర్థనలో నాలుగు అంశాలు ఉంటాయి. బాక్స్‌లో ఒకటి టైప్ చేసి చూడండి, అవి వెలుగుతాయి.",
+ startLesson:"పాఠం 1 ప్రారంభించండి", findTool:"సరైన టూల్ కనుగొనండి",
+ pathTitle:"మీ నేర్చుకునే దారి", pathSub:"ప్రతి పాఠం సుమారు ఐదు నిమిషాలు, చివర్లో ఒక చిన్న క్విజ్ ఉంటుంది.", min:"నిమి",
+ allLessons:"‹ అన్ని పాఠాలు", weak:"బలహీనమైన అభ్యర్థన", strong:"బలమైన అభ్యర్థన", tip:"చిట్కా:", yourTurn:"ఇప్పుడు మీ వంతు: ",
+ listen:"ఈ పాఠం వినండి", stop:"వినడం ఆపండి",
+ noVoice:"మీ డివైస్‌లో ఇంకా ఈ భాషకు వాయిస్ లేదు. Androidలో Chrome ప్రయత్నించండి, లేదా ఫోన్ టెక్స్ట్-టు-స్పీచ్ సెట్టింగ్స్‌లో భాషను జోడించండి.",
+ quizTitle:"చిన్న క్విజ్", quizSub:"పాఠం పూర్తి చేయడానికి రెండు ప్రశ్నలకు సరైన సమాధానాలు ఇవ్వండి.", check:"సమాధానాలు చూడండి",
+ quizPass:"అన్నీ సరైనవే! పాఠం పూర్తయింది!", quizRetry:"పూర్తిగా సరైనది కాదు. హైలైట్ చేసిన ప్రశ్న చూసి మళ్లీ ప్రయత్నించండి.", quizMissing:"ప్రతి ప్రశ్నకు ఒక సమాధానం ఎంచుకోండి.",
+ quizDone:"మీరు ఈ పాఠం పూర్తి చేశారు.",
+ next:"తదుపరి పాఠం", getCert:"మీ సర్టిఫికెట్ పొందండి", certReadyShort:"మీరు 7 పాఠాలూ పూర్తి చేశారు. మీ సర్టిఫికెట్ సిద్ధంగా ఉంది.",
+ helpful:"ఈ పాఠం ఉపయోగపడిందా?", yes:"అవును", no:"అంతగా లేదు", thanks:"ధన్యవాదాలు! మీ అభిప్రాయం AskWellను మెరుగుపరుస్తుంది.",
+ kLabelHero:"ప్రయత్నించండి: Claude కోసం ఒక అభ్యర్థన రాయండి", kLabel:"మీ అభ్యర్థన రాయండి",
+ kPlaceholder:"ఉదాహరణ: నా 12 ఏళ్ల పిల్లవాడికి బడ్జెట్ అంటే ఏమిటో 3 చిన్న పాయింట్లలో సరదాగా వివరించు.",
+ ingWhat:"ఏమిటి", ingWhatS:"మీకు కావాల్సిన పని", ingBg:"నేపథ్యం", ingBgS:"ఎవరి కోసం లేదా ఎందుకు", ingShape:"రూపం", ingShapeS:"పొడవు, జాబితా, దశలు", ingTone:"శైలి", ingToneS:"సులభం, స్నేహపూర్వకం, అధికారికం",
+ scoreEmpty:"మీ అంశాలు చూడటానికి టైప్ చేయడం ప్రారంభించండి.", scoreAll:"నాలుగు అంశాలూ ఉన్నాయి. చాలా మంచి అభ్యర్థన!", scoreSome:"4లో {n} అంశాలు.",
+ scoreLow:"ఇది ఎవరి కోసం, లేదా సమాధానం ఎంత పొడవు ఉండాలో జోడించండి.", scoreAlmost:"దాదాపు అయిపోయింది.",
+ coach:"Claude నుంచి సలహా పొందండి", run:"Claudeకు పంపండి",
+ noSample:"చిట్కా: లైవ్ సలహా, సమాధానాల కోసం ఈ యాప్‌ను Claude లోపల తెరవండి. అంశాల బాక్స్‌లు ఎక్కడైనా పనిచేస్తాయి.",
+ thinking:"ఆలోచిస్తోంది...", typeFirst:"ముందు ఒక అభ్యర్థన టైప్ చేసి, మళ్లీ ప్రయత్నించండి.",
+ unavail:"ఇక్కడ Claude లైవ్ సమాధానాలు అందుబాటులో లేవు, కానీ అంశాల బాక్స్‌లు మీ అభ్యర్థనను తనిఖీ చేస్తాయి.",
+ errDenied:"ఈ పేజీకి Claude అనుమతి ఇవ్వలేదు. అయినా మీరు సాధన చేయవచ్చు: అంశాల బాక్స్‌లు అది లేకుండానే పనిచేస్తాయి.",
+ errRate:"ఒకేసారి చాలా అభ్యర్థనలు వచ్చాయి. ఒక నిమిషం ఆగి మళ్లీ ప్రయత్నించండి.", errGen:"Claude ఇప్పుడు సమాధానం ఇవ్వలేకపోయింది. మీ ఇంటర్నెట్ చూసి మళ్లీ ప్రయత్నించండి.",
+ cWorked:"ఏది బాగుంది", cTry:"ఒకటి ప్రయత్నించండి", cBetter:"మెరుగైన రూపం", cUse:"ఈ రూపం వాడండి",
+ fTitle:"సరైన AI టూల్ కనుగొనండి", fLede:"మూడు చిన్న ప్రశ్నలకు జవాబిచ్చి, మీకు సరిపోయే టాప్ 3 టూల్స్ పొందండి.",
+ fQ1:"మీరు ఏం చేయాలనుకుంటున్నారు?", fQ2:"మీరు ఎవరు?", fQ3:"మీరు దేనిపై వాడతారు?", fShow:"నా టూల్స్ చూపించు", fResult:"మీ టాప్ 3 టూల్స్",
+ g_write:"టెక్స్ట్ రాయడం లేదా సరిచేయడం", g_study:"చదువు లేదా రీసెర్చ్", g_images:"చిత్రాలు లేదా పోస్టర్లు తయారుచేయడం", g_video:"వీడియోలు తయారుచేయడం లేదా ఎడిట్ చేయడం", g_slides:"ప్రెజెంటేషన్ తయారుచేయడం",
+ g_meetings:"మీటింగ్ లేదా క్లాస్ నోట్స్", g_build:"యాప్ తయారుచేయడం లేదా కోడ్ రాయడం", g_language:"అనువాదం లేదా కొత్త భాష నేర్చుకోవడం", g_voice:"వాయిస్, ఆడియో లేదా సంగీతం", g_automate:"పనిని ఆటోమేట్ చేయడం లేదా డేటా విశ్లేషణ",
+ w_student:"విద్యార్థి", w_job:"ఉద్యోగం వెతుకుతున్నవారు", w_business:"షాప్ లేదా వ్యాపార యజమాని", w_teacher:"ఉపాధ్యాయులు", w_any:"ఊరికే తెలుసుకోవాలని",
+ d_phone:"ఫోన్", d_computer:"కంప్యూటర్", d_both:"రెండూ",
+ detailsEn:"టూల్ వివరాలు ప్రస్తుతం ఇంగ్లీష్‌లో ఉన్నాయి.", pageEn:"ఈ పేజీ ప్రస్తుతం ఇంగ్లీష్‌లో ఉంది.",
+ tTitle:"సిద్ధంగా ఉన్న ప్రాంప్ట్ టెంప్లేట్లు", tLede:"ఒక టెంప్లేట్ కాపీ చేసి, [బ్రాకెట్లు] నింపి, Claudeలో పేస్ట్ చేయండి. లేదా “దీనితో సాధన చేయండి” నొక్కి ఇక్కడే ప్రయత్నించండి. మీరు తెలుగులో కూడా రాయవచ్చు.",
+ copy:"కాపీ చేయండి", copied:"కాపీ అయింది", practice:"దీనితో సాధన చేయండి",
+ p_students:"విద్యార్థులు", p_job:"ఉద్యోగార్థులు", p_business:"దుకాణదారులు", p_teachers:"ఉపాధ్యాయులు", p_everyday:"రోజువారీ జీవితం", p_all:"అన్నీ",
+ toolsTitle:"AI టూల్స్ డైరెక్టరీ", toolsLede:"బాగా పనిచేసే 66 ప్రసిద్ధ AI టూల్స్. ప్రతి టూల్ దేనికి, ఎక్కడ వాడొచ్చు, ఎలా మొదలుపెట్టాలో ఇక్కడ ఉంది.",
+ searchLabel:"టూల్స్ వెతకండి", searchPh:"టూల్స్ వెతకండి, ఉదా: “video” లేదా “translate”",
+ checked:"టూల్ వివరాలు చివరిగా తనిఖీ చేసినది: {d}", allCount:"అన్నీ ({n})", showing:"{n} టూల్స్ చూపిస్తున్నాం", showingOne:"1 టూల్ చూపిస్తున్నాం",
+ noMatch:"ఏ టూల్ దొరకలేదు. “video”, “notes” లేదా “translate” వంటి వేరే పదం ప్రయత్నించండి.",
+ useFor:"దేనికి:", where:"ఎక్కడ:", howStart:"ఎలా మొదలుపెట్టాలి", videos:"వీడియోలు మరియు కోర్సులు", open:"{n} తెరవండి",
+ latest:"తాజా ట్యుటోరియల్స్", founder:"ఫౌండర్ ఇంటర్వ్యూలు", team:"టీమ్ మాటలు వినండి", courses:"పూర్తి కోర్సులు", newest:"కొత్తవి ముందు", byDevs:"డెవలపర్ల నుంచి",
+ report:"సమస్యను తెలపండి", reported:"ధన్యవాదాలు, తెలియజేశాం.",
+ certTitle:"మీ AskWell సర్టిఫికెట్", certLocked:"సర్టిఫికెట్ పొందడానికి 7 పాఠాలూ పూర్తి చేయండి. మీరు 7లో {d} పూర్తి చేశారు.",
+ certReady:"మీరు సాధించారు! సర్టిఫికెట్‌పై ఉండాల్సిన విధంగా మీ పేరు టైప్ చేయండి.", yourName:"మీ పేరు",
+ makeCert:"నా సర్టిఫికెట్ తయారుచేయి", download:"సర్టిఫికెట్ డౌన్‌లోడ్ చేయండి", nameNeeded:"ముందు మీ పేరు టైప్ చేయండి.", saved:"మీ డివైస్‌లో సేవ్ అయింది.",
+ saveHint:"సేవ్ చేయడానికి, చిత్రాన్ని ఎక్కువసేపు నొక్కండి (ఫోన్) లేదా రైట్-క్లిక్ చేయండి (కంప్యూటర్).",
+ certNote:"ఇది AskWell పూర్తి చేసినందుకు ఇచ్చే సర్టిఫికెట్, ఇండస్ట్రీ సర్టిఫికేషన్ కాదు. వాటి కోసం సర్టిఫికెట్ల పేజీ చూడండి.",
+ aTitle:"AskWell గురించి",
+ aWho:"ఏ వయసు వారైనా నమ్మకంగా AI వాడటం నేర్చుకోవడానికి సహాయపడేలా, VJIT, హైదరాబాద్‌లో B.Tech CSE (Data Science) చివరి సంవత్సరం చదువుతున్న Ananya AskWellను తయారు చేశారు.",
+ aWhyH:"ఇది ఎందుకు", aWhy:"చాలా AI గైడ్‌లు టెక్నికల్ వ్యక్తుల కోసం రాసినవే. AskWell AIని సులభమైన మాటల్లో, ఇంగ్లీష్, హిందీ, తెలుగులో, సాధనతో కలిపి వివరిస్తుంది.",
+ aPrivH:"మీ గోప్యత", aPriv:"మీ పాఠాల పురోగతి, సర్టిఫికెట్‌పై పేరు మీ బ్రౌజర్‌లో మాత్రమే సేవ్ అవుతాయి. మీరు Claude బటన్ నొక్కినప్పుడు, మీరు టైప్ చేసిన టెక్స్ట్ సమాధానం కోసం Claudeకు పంపబడుతుంది. పాఠాల రేటింగ్‌లు, సమస్యల రిపోర్ట్‌లు మీ పేరు లేకుండా సేవ్ అవుతాయి.",
+ aAccH:"దీన్ని ఖచ్చితంగా ఎలా ఉంచుతాం", aAcc:"టూల్ వివరాలు, కోర్సు ధరలు చేతితో తనిఖీ చేస్తాం, ప్రతి పేజీలో చివరిగా ఎప్పుడు తనిఖీ చేశామో ఉంటుంది. ఏదైనా తప్పుగా అనిపిస్తే, ఏ టూల్ కార్డ్‌పైనైనా “సమస్యను తెలపండి” నొక్కండి.",
+ aGh:"GitHubలో కోడ్ చూడండి"
+}};
+
+const LESSONS = [
+{mins:4, ans:[1,1],
+ en:{title:"Meet Claude", sub:"What an AI assistant is, and what it isn’t",
+  body:`<p>Claude is an AI assistant. You type a message in normal words, and it writes back. It can explain things, help you write, plan, summarize, and brainstorm.</p><p>It isn’t a search engine and it isn’t a person. It learned from a huge amount of text, so it’s good with language, but it can sometimes be wrong. Think of it as a smart helper whose work you still check.</p>`,
+  weak:"Hi", strong:"Hi! I’m new to this. What are 3 simple ways you could help me with my daily work as a shop owner?",
+  tip:"There’s no special language to learn. Just write the way you’d talk.",
+  task:"Introduce yourself and ask Claude how it could help with something in your life.",
+  quiz:[{q:"What is the best way to talk to Claude?", o:["Use special computer commands","Write normally, like talking to a helpful person","Type only single keywords"]},
+        {q:"Can Claude be wrong?", o:["No, AI is always correct","Yes, so check important answers"]}]},
+ hi:{title:"Claude से मिलिए", sub:"AI असिस्टेंट क्या है, और क्या नहीं",
+  body:`<p>Claude एक AI असिस्टेंट है। आप आम शब्दों में मैसेज लिखते हैं, और यह जवाब लिखता है। यह चीज़ें समझा सकता है, लिखने में मदद कर सकता है, योजना बना सकता है, सारांश बना सकता है और नए आइडिया दे सकता है।</p><p>यह न तो सर्च इंजन है और न ही कोई इंसान। इसने बहुत सारे टेक्स्ट से सीखा है, इसलिए भाषा में अच्छा है, पर कभी-कभी गलत भी हो सकता है। इसे एक समझदार मददगार समझें, जिसके काम को आप फिर भी जाँचते हैं।</p>`,
+  weak:"Hi", strong:"नमस्ते! मैं AI में नया हूँ। एक दुकान मालिक के तौर पर मेरे रोज़ के काम में आप किन 3 आसान तरीकों से मदद कर सकते हैं?",
+  tip:"कोई खास भाषा सीखने की ज़रूरत नहीं। बस वैसे ही लिखें जैसे आप बात करते हैं।",
+  task:"अपना परिचय दें और Claude से पूछें कि वह आपकी ज़िंदगी के किसी काम में कैसे मदद कर सकता है।",
+  quiz:[{q:"Claude से बात करने का सबसे अच्छा तरीका क्या है?", o:["खास कंप्यूटर कमांड इस्तेमाल करें","आम भाषा में लिखें, जैसे किसी मददगार इंसान से बात कर रहे हों","सिर्फ़ एक-एक शब्द टाइप करें"]},
+        {q:"क्या Claude गलत हो सकता है?", o:["नहीं, AI हमेशा सही होता है","हाँ, इसलिए ज़रूरी जवाब जाँचें"]}]},
+ te:{title:"Claudeను పరిచయం చేసుకోండి", sub:"AI అసిస్టెంట్ అంటే ఏమిటి, ఏమి కాదు",
+  body:`<p>Claude ఒక AI అసిస్టెంట్. మీరు సాధారణ మాటల్లో మెసేజ్ రాస్తారు, అది జవాబు రాస్తుంది. ఇది విషయాలను వివరించగలదు, రాయడంలో సహాయం చేయగలదు, ప్లాన్ చేయగలదు, సారాంశం ఇవ్వగలదు, కొత్త ఆలోచనలు చెప్పగలదు.</p><p>ఇది సెర్చ్ ఇంజిన్ కాదు, మనిషి కూడా కాదు. ఇది చాలా ఎక్కువ టెక్స్ట్ నుంచి నేర్చుకుంది, కాబట్టి భాషలో బాగుంటుంది, కానీ కొన్నిసార్లు తప్పు కూడా చెప్పొచ్చు. దీన్ని ఒక తెలివైన సహాయకుడిగా భావించండి, కానీ దాని పనిని మీరు తనిఖీ చేయండి.</p>`,
+  weak:"Hi", strong:"నమస్తే! నేను AIకి కొత్త. ఒక షాప్ యజమానిగా నా రోజువారీ పనిలో మీరు ఏ 3 సులభమైన విధాలుగా సహాయం చేయగలరు?",
+  tip:"ప్రత్యేక భాష నేర్చుకోవాల్సిన అవసరం లేదు. మీరు మాట్లాడినట్లే రాయండి.",
+  task:"మిమ్మల్ని పరిచయం చేసుకుని, మీ జీవితంలో ఏదైనా పనిలో Claude ఎలా సహాయం చేయగలదో అడగండి.",
+  quiz:[{q:"Claudeతో మాట్లాడటానికి ఉత్తమ మార్గం ఏది?", o:["ప్రత్యేక కంప్యూటర్ కమాండ్లు వాడటం","సహాయం చేసే వ్యక్తితో మాట్లాడినట్లు సాధారణంగా రాయడం","ఒక్కో పదం మాత్రమే టైప్ చేయడం"]},
+        {q:"Claude తప్పు చెప్పగలదా?", o:["లేదు, AI ఎప్పుడూ సరైనదే","అవును, అందుకే ముఖ్యమైన సమాధానాలు తనిఖీ చేయాలి"]}]}},
+{mins:5, ans:[1,0],
+ en:{title:"The four ingredients", sub:"What, background, shape, and tone",
+  body:`<p>Most disappointing AI answers come from requests that are too short. A good request usually has four ingredients:</p><p><b>What</b> you want done. <b>Background</b>: who it’s for or why you need it. <b>Shape</b>: how long, and whether you want a list, steps, or a paragraph. <b>Tone</b>: simple, friendly, formal, or funny.</p><p>You don’t always need all four, but adding even one more makes a big difference.</p>`,
+  weak:"Write about healthy food.", strong:"Write 5 short tips on healthy, cheap {cuisine}breakfasts for a college student with only 10 minutes in the morning. Keep it friendly and simple.",
+  tip:"Read your request back and ask: would a stranger know exactly what I mean?",
+  task:"Write a request that uses all four ingredients. Aim to light up every box.",
+  quiz:[{q:"Which request has all four ingredients?", o:["Write about food.","Write 5 short, friendly tips on cheap breakfasts for a busy college student.","Food tips please"]},
+        {q:"What does “shape” mean in a request?", o:["The length or format of the answer","The colour of the text","The font size"]}]},
+ hi:{title:"चार ज़रूरी चीज़ें", sub:"क्या, पृष्ठभूमि, रूप और लहजा",
+  body:`<p>AI के ज़्यादातर निराश करने वाले जवाब बहुत छोटी रिक्वेस्ट की वजह से आते हैं। एक अच्छी रिक्वेस्ट में आमतौर पर चार चीज़ें होती हैं:</p><p><b>क्या</b> करवाना है। <b>पृष्ठभूमि</b>: यह किसके लिए है या क्यों चाहिए। <b>रूप</b>: कितना लंबा, और सूची, कदम या पैराग्राफ़। <b>लहजा</b>: आसान, दोस्ताना, औपचारिक या मज़ेदार।</p><p>हर बार चारों की ज़रूरत नहीं होती, पर एक चीज़ और जोड़ने से भी बड़ा फ़र्क पड़ता है।</p>`,
+  weak:"हेल्दी खाने के बारे में लिखो।", strong:"एक कॉलेज छात्र के लिए, जिसके पास सुबह सिर्फ़ 10 मिनट हैं, सस्ते और हेल्दी भारतीय नाश्ते पर 5 छोटे टिप्स लिखो। दोस्ताना और आसान भाषा रखो।",
+  tip:"अपनी रिक्वेस्ट दोबारा पढ़ें और पूछें: क्या कोई अजनबी ठीक-ठीक समझ पाएगा कि मुझे क्या चाहिए?",
+  task:"ऐसी रिक्वेस्ट लिखें जिसमें चारों चीज़ें हों। कोशिश करें कि हर बॉक्स चमक उठे।",
+  quiz:[{q:"किस रिक्वेस्ट में चारों चीज़ें हैं?", o:["खाने के बारे में लिखो।","एक व्यस्त कॉलेज छात्र के लिए सस्ते नाश्ते पर 5 छोटे, दोस्ताना टिप्स लिखो।","खाने के टिप्स दो"]},
+        {q:"रिक्वेस्ट में “रूप” का क्या मतलब है?", o:["जवाब की लंबाई या फ़ॉर्मेट","टेक्स्ट का रंग","फ़ॉन्ट का साइज़"]}]},
+ te:{title:"నాలుగు అంశాలు", sub:"ఏమిటి, నేపథ్యం, రూపం, శైలి",
+  body:`<p>AI ఇచ్చే చాలా నిరాశపరిచే సమాధానాలు మరీ చిన్న అభ్యర్థనల వల్లే వస్తాయి. మంచి అభ్యర్థనలో సాధారణంగా నాలుగు అంశాలు ఉంటాయి:</p><p><b>ఏమిటి</b>: మీకు ఏ పని కావాలి. <b>నేపథ్యం</b>: ఇది ఎవరి కోసం లేదా ఎందుకు కావాలి. <b>రూపం</b>: ఎంత పొడవు, జాబితానా, దశలా, పేరాగ్రాఫా. <b>శైలి</b>: సులభంగా, స్నేహపూర్వకంగా, అధికారికంగా లేదా సరదాగా.</p><p>ప్రతిసారీ నాలుగూ అవసరం లేదు, కానీ ఇంకొక్కటి జోడించినా పెద్ద తేడా వస్తుంది.</p>`,
+  weak:"ఆరోగ్యకరమైన ఆహారం గురించి రాయి.", strong:"ఉదయం 10 నిమిషాలు మాత్రమే ఉండే కాలేజీ విద్యార్థి కోసం, తక్కువ ఖర్చుతో ఆరోగ్యకరమైన భారతీయ బ్రేక్‌ఫాస్ట్‌పై 5 చిన్న చిట్కాలు రాయి. స్నేహపూర్వకంగా, సులభంగా ఉండాలి.",
+  tip:"మీ అభ్యర్థనను మళ్లీ చదివి అడగండి: కొత్తవాళ్లకు కూడా నాకు ఏం కావాలో సరిగ్గా అర్థమవుతుందా?",
+  task:"నాలుగు అంశాలూ ఉన్న అభ్యర్థన రాయండి. ప్రతి బాక్స్ వెలిగేలా ప్రయత్నించండి.",
+  quiz:[{q:"నాలుగు అంశాలూ ఉన్న అభ్యర్థన ఏది?", o:["ఆహారం గురించి రాయి.","బిజీగా ఉండే కాలేజీ విద్యార్థి కోసం తక్కువ ఖర్చు బ్రేక్‌ఫాస్ట్‌పై 5 చిన్న, స్నేహపూర్వక చిట్కాలు రాయి.","ఆహార చిట్కాలు ఇవ్వు"]},
+        {q:"అభ్యర్థనలో “రూపం” అంటే ఏమిటి?", o:["సమాధానం పొడవు లేదా ఫార్మాట్","టెక్స్ట్ రంగు","ఫాంట్ సైజు"]}]}},
+{mins:5, ans:[2,0],
+ en:{title:"Give it something to work with", sub:"Paste text and ask Claude to use it",
+  body:`<p>Claude works much better when you give it the actual material. Paste in a message, notes, or an article, then say what to do with it.</p><p>Good jobs for this: summarize a long message, turn notes into a neat list, explain a confusing letter in simple words, or fix grammar.</p>`,
+  weak:"Summarize my notes.", strong:"Here are my class notes: [paste notes]. Summarize them into 5 key points I can revise from before my exam tomorrow.",
+  tip:"Never paste passwords, bank details, or anyone’s private ID numbers.",
+  task:"Write a request that includes a short piece of text (2–3 sentences) and asks Claude to do something with it.",
+  quiz:[{q:"What should you NEVER paste into an AI chat?", o:["Your class notes","A news article","Your bank PIN or passwords"]},
+        {q:"What helps Claude summarize your notes well?", o:["Pasting the notes and saying what you need","Just writing “summarize”"]}]},
+ hi:{title:"उसे काम करने के लिए कुछ दें", sub:"टेक्स्ट पेस्ट करें और Claude से उसका इस्तेमाल करवाएँ",
+  body:`<p>जब आप असली सामग्री देते हैं, तो Claude बहुत बेहतर काम करता है। कोई मैसेज, नोट्स या लेख पेस्ट करें, फिर बताएँ कि उसके साथ क्या करना है।</p><p>इसके अच्छे उपयोग: लंबे मैसेज का सारांश, नोट्स को साफ़ सूची में बदलना, उलझाने वाले पत्र को आसान शब्दों में समझना, या ग्रामर ठीक करना।</p>`,
+  weak:"मेरे नोट्स का सारांश दो।", strong:"ये रहे मेरे क्लास नोट्स: [नोट्स पेस्ट करें]। कल की परीक्षा के लिए इन्हें 5 मुख्य बिंदुओं में बदलो, ताकि मैं दोहरा सकूँ।",
+  tip:"पासवर्ड, बैंक की जानकारी, या किसी का निजी ID नंबर कभी पेस्ट न करें।",
+  task:"ऐसी रिक्वेस्ट लिखें जिसमें 2–3 वाक्यों का छोटा टेक्स्ट हो और Claude से उसके साथ कुछ करने को कहें।",
+  quiz:[{q:"AI चैट में क्या कभी पेस्ट नहीं करना चाहिए?", o:["आपके क्लास नोट्स","कोई न्यूज़ लेख","आपका बैंक PIN या पासवर्ड"]},
+        {q:"Claude आपके नोट्स का अच्छा सारांश कैसे बना पाएगा?", o:["नोट्स पेस्ट करके बताएँ कि क्या चाहिए","सिर्फ़ “सारांश दो” लिखकर"]}]},
+ te:{title:"దానికి పని చేయడానికి ఏదైనా ఇవ్వండి", sub:"టెక్స్ట్ పేస్ట్ చేసి, దాన్ని వాడమని Claudeను అడగండి",
+  body:`<p>అసలు విషయాన్ని ఇచ్చినప్పుడు Claude చాలా బాగా పనిచేస్తుంది. ఒక మెసేజ్, నోట్స్ లేదా ఆర్టికల్ పేస్ట్ చేసి, దానితో ఏం చేయాలో చెప్పండి.</p><p>దీనికి మంచి ఉపయోగాలు: పొడవైన మెసేజ్‌కు సారాంశం, నోట్స్‌ను చక్కని జాబితాగా మార్చడం, అర్థం కాని లెటర్‌ను సులభమైన మాటల్లో వివరించడం, లేదా గ్రామర్ సరిచేయడం.</p>`,
+  weak:"నా నోట్స్‌కు సారాంశం ఇవ్వు.", strong:"ఇవి నా క్లాస్ నోట్స్: [నోట్స్ పేస్ట్ చేయండి]. రేపటి పరీక్ష కోసం రివిజన్ చేసుకోవడానికి వీటిని 5 ముఖ్యమైన పాయింట్లుగా మార్చు.",
+  tip:"పాస్‌వర్డ్‌లు, బ్యాంక్ వివరాలు, లేదా ఎవరి వ్యక్తిగత ID నంబర్లు ఎప్పుడూ పేస్ట్ చేయవద్దు.",
+  task:"2–3 వాక్యాల చిన్న టెక్స్ట్ ఉన్న అభ్యర్థన రాసి, దానితో ఏదైనా చేయమని Claudeను అడగండి.",
+  quiz:[{q:"AI చాట్‌లో ఎప్పుడూ పేస్ట్ చేయకూడనిది ఏమిటి?", o:["మీ క్లాస్ నోట్స్","ఒక వార్తా ఆర్టికల్","మీ బ్యాంక్ PIN లేదా పాస్‌వర్డ్‌లు"]},
+        {q:"Claude మీ నోట్స్‌కు మంచి సారాంశం ఎలా ఇవ్వగలదు?", o:["నోట్స్ పేస్ట్ చేసి, ఏం కావాలో చెప్పడం","కేవలం “సారాంశం ఇవ్వు” అని రాయడం"]}]}},
+{mins:4, ans:[1,1],
+ en:{title:"Keep the conversation going", sub:"Fix the answer with follow-ups",
+  body:`<p>Your first answer doesn’t have to be perfect. Reply just like you would to a person: “make it shorter”, “use simpler words”, or “give me another option”.</p><p>Each follow-up builds on what you already have, so you get closer to what you want without starting over.</p>`,
+  weak:"No, that’s wrong.", strong:"That’s close, but please make it half as long and remove the technical words.",
+  tip:"Say what to change and how. “Shorter” is good. “Shorter, with one example” is better.",
+  task:"Write a follow-up you might send after an answer that was too long and too complicated.",
+  quiz:[{q:"The answer is too long. What’s the best reply?", o:["Start a brand new chat","Please make it half as long and simpler","That’s wrong"]},
+        {q:"Do you have to get it perfect on the first try?", o:["Yes","No, you can improve it with follow-ups"]}]},
+ hi:{title:"बातचीत जारी रखें", sub:"आगे के मैसेज से जवाब सुधारें",
+  body:`<p>पहला जवाब बिल्कुल सही होना ज़रूरी नहीं है। जैसे किसी इंसान को जवाब देते हैं, वैसे ही लिखें: “इसे छोटा करो”, “आसान शब्दों में लिखो”, या “एक और विकल्प दो”।</p><p>हर अगला मैसेज पिछले जवाब पर बनता है, इसलिए बिना दोबारा शुरू किए आप अपनी ज़रूरत के करीब पहुँचते जाते हैं।</p>`,
+  weak:"नहीं, यह गलत है।", strong:"करीब है, पर इसे आधा लंबा करो और तकनीकी शब्द हटा दो।",
+  tip:"बताएँ क्या बदलना है और कैसे। “छोटा करो” ठीक है। “छोटा करो, एक उदाहरण के साथ” उससे बेहतर है।",
+  task:"एक ऐसा अगला मैसेज लिखें जो आप बहुत लंबे और मुश्किल जवाब के बाद भेजेंगे।",
+  quiz:[{q:"जवाब बहुत लंबा है। सबसे अच्छा अगला मैसेज क्या है?", o:["बिल्कुल नई चैट शुरू करें","कृपया इसे आधा लंबा और आसान करो","यह गलत है"]},
+        {q:"क्या पहली बार में ही सब परफ़ेक्ट होना ज़रूरी है?", o:["हाँ","नहीं, आगे के मैसेज से सुधार सकते हैं"]}]},
+ te:{title:"సంభాషణ కొనసాగించండి", sub:"తదుపరి మెసేజ్‌లతో సమాధానాన్ని మెరుగుపరచండి",
+  body:`<p>మొదటి సమాధానం పర్ఫెక్ట్‌గా ఉండాల్సిన అవసరం లేదు. ఒక మనిషికి జవాబిచ్చినట్లే రాయండి: “ఇంకా చిన్నగా చేయి”, “సులభమైన మాటల్లో రాయి”, లేదా “ఇంకొక ఆప్షన్ ఇవ్వు”.</p><p>ప్రతి తదుపరి మెసేజ్ ముందున్న సమాధానంపైనే ఆధారపడుతుంది, కాబట్టి మళ్లీ మొదలుపెట్టకుండానే మీకు కావాల్సినదానికి దగ్గరవుతారు.</p>`,
+  weak:"కాదు, ఇది తప్పు.", strong:"దగ్గరగా ఉంది, కానీ దీన్ని సగం పొడవుకు తగ్గించి, టెక్నికల్ పదాలు తీసేయి.",
+  tip:"ఏం మార్చాలో, ఎలా మార్చాలో చెప్పండి. “చిన్నగా చేయి” బాగుంది. “చిన్నగా చేయి, ఒక ఉదాహరణతో” ఇంకా బాగుంది.",
+  task:"చాలా పొడవుగా, కష్టంగా ఉన్న సమాధానం వచ్చిన తర్వాత మీరు పంపే తదుపరి మెసేజ్ రాయండి.",
+  quiz:[{q:"సమాధానం చాలా పొడవుగా ఉంది. ఉత్తమ తదుపరి మెసేజ్ ఏది?", o:["పూర్తిగా కొత్త చాట్ మొదలుపెట్టడం","దయచేసి దీన్ని సగం పొడవుకు, సులభంగా చేయి","ఇది తప్పు"]},
+        {q:"మొదటిసారే అంతా పర్ఫెక్ట్‌గా ఉండాలా?", o:["అవును","లేదు, తదుపరి మెసేజ్‌లతో మెరుగుపరచవచ్చు"]}]}},
+{mins:5, ans:[1,0],
+ en:{title:"Check its work", sub:"AI can sound sure and still be wrong",
+  body:`<p>AI can make mistakes, mix up facts, or invent details that sound real. This matters most for health, money, legal matters, dates, and numbers.</p><p>Useful habits: ask Claude how sure it is, ask it to point out what you should double-check, and confirm important facts with a trusted source or a real expert.</p>`,
+  weak:"Tell me the right medicine dose.", strong:"Explain in simple words what questions I should ask my doctor about my new prescription.",
+  tip:"Use AI to understand and prepare. Use real experts for final decisions.",
+  task:"Ask Claude something, and in the same message ask it to tell you which parts you should double-check.",
+  quiz:[{q:"For a medicine dose, what should you do?", o:["Trust the AI answer fully","Ask a doctor or pharmacist"]},
+        {q:"What is a good habit?", o:["Ask Claude which parts to double-check","Never check anything"]}]},
+ hi:{title:"उसके काम की जाँच करें", sub:"AI पूरे भरोसे से बोलकर भी गलत हो सकता है",
+  body:`<p>AI गलतियाँ कर सकता है, तथ्य उलझा सकता है, या ऐसी बातें बना सकता है जो सच लगती हैं। स्वास्थ्य, पैसे, कानूनी मामलों, तारीख़ों और आँकड़ों में यह सबसे ज़्यादा मायने रखता है।</p><p>अच्छी आदतें: Claude से पूछें कि वह कितना पक्का है, उससे पूछें कि आपको क्या दोबारा जाँचना चाहिए, और ज़रूरी बातें किसी भरोसेमंद स्रोत या असली विशेषज्ञ से पक्की करें।</p>`,
+  weak:"मुझे दवा की सही खुराक बताओ।", strong:"मेरी नई दवा के बारे में डॉक्टर से कौन-से सवाल पूछने चाहिए, आसान शब्दों में बताओ।",
+  tip:"समझने और तैयारी के लिए AI का इस्तेमाल करें। आख़िरी फ़ैसले के लिए असली विशेषज्ञ से बात करें।",
+  task:"Claude से कुछ पूछें, और उसी मैसेज में यह भी पूछें कि किन हिस्सों को आपको दोबारा जाँचना चाहिए।",
+  quiz:[{q:"दवा की खुराक के लिए क्या करना चाहिए?", o:["AI के जवाब पर पूरा भरोसा करें","डॉक्टर या फ़ार्मासिस्ट से पूछें"]},
+        {q:"अच्छी आदत क्या है?", o:["Claude से पूछें कि किन हिस्सों को दोबारा जाँचना है","कभी कुछ न जाँचें"]}]},
+ te:{title:"దాని పనిని తనిఖీ చేయండి", sub:"AI నమ్మకంగా చెప్పినా తప్పు కావచ్చు",
+  body:`<p>AI తప్పులు చేయవచ్చు, వాస్తవాలను కలిపేయవచ్చు, లేదా నిజంలా అనిపించే వివరాలను సృష్టించవచ్చు. ఆరోగ్యం, డబ్బు, చట్టపరమైన విషయాలు, తేదీలు, సంఖ్యల విషయంలో ఇది చాలా ముఖ్యం.</p><p>మంచి అలవాట్లు: Claude ఎంత ఖచ్చితంగా ఉందో అడగండి, ఏ భాగాలను మళ్లీ తనిఖీ చేయాలో అడగండి, ముఖ్యమైన విషయాలను నమ్మకమైన మూలం లేదా నిజమైన నిపుణుడితో నిర్ధారించుకోండి.</p>`,
+  weak:"నాకు మందు సరైన డోస్ చెప్పు.", strong:"నా కొత్త మందు గురించి డాక్టర్‌ను ఏ ప్రశ్నలు అడగాలో సులభమైన మాటల్లో చెప్పు.",
+  tip:"అర్థం చేసుకోవడానికి, సిద్ధం కావడానికి AI వాడండి. చివరి నిర్ణయాలకు నిజమైన నిపుణులను సంప్రదించండి.",
+  task:"Claudeను ఏదైనా అడగండి, అదే మెసేజ్‌లో ఏ భాగాలను మళ్లీ తనిఖీ చేయాలో కూడా చెప్పమని అడగండి.",
+  quiz:[{q:"మందు డోస్ కోసం ఏం చేయాలి?", o:["AI సమాధానాన్ని పూర్తిగా నమ్మడం","డాక్టర్ లేదా ఫార్మసిస్ట్‌ను అడగడం"]},
+        {q:"మంచి అలవాటు ఏది?", o:["ఏ భాగాలను మళ్లీ తనిఖీ చేయాలో Claudeను అడగడం","ఎప్పుడూ ఏదీ తనిఖీ చేయకపోవడం"]}]}},
+{mins:5, ans:[0,0],
+ en:{title:"Everyday wins", sub:"Emails, plans, explanations, and ideas",
+  body:`<p>Now put it all together. Popular everyday uses include drafting a polite email, making a weekly study or meal plan, explaining a topic to a child, preparing for an interview, and brainstorming names or ideas.</p><p>Start with one small task you actually have this week. That’s the fastest way to make AI useful for you.</p>`,
+  weak:"Write an email.", strong:"Write a short, polite email to my landlord asking to fix a leaking tap this week. I’m a tenant in flat 3B. Keep it friendly but clear.",
+  tip:"Save requests that worked well, so you can reuse them later. The Templates page has many ready-made ones.",
+  task:"Write a request for a real task you have this week, using everything you’ve learned.",
+  quiz:[{q:"What’s the fastest way to make AI useful for you?", o:["Try it on a real task you have this week","Read about AI for months first"]},
+        {q:"What should you do with requests that worked well?", o:["Save them to reuse later","Delete them"]}]},
+ hi:{title:"रोज़ की जीत", sub:"ईमेल, प्लान, समझाना और आइडिया",
+  body:`<p>अब सब कुछ साथ में इस्तेमाल करें। रोज़ के लोकप्रिय उपयोग: विनम्र ईमेल लिखना, हफ़्ते की पढ़ाई या खाने की योजना बनाना, बच्चे को कोई विषय समझाना, इंटरव्यू की तैयारी, और नाम या आइडिया सोचना।</p><p>इस हफ़्ते के किसी असली छोटे काम से शुरू करें। AI को अपने लिए उपयोगी बनाने का यही सबसे तेज़ तरीका है।</p>`,
+  weak:"एक ईमेल लिखो।", strong:"मेरे मकान मालिक को इस हफ़्ते टपकता नल ठीक करवाने के लिए एक छोटा, विनम्र ईमेल लिखो। मैं फ़्लैट 3B में किराएदार हूँ। दोस्ताना पर साफ़ रखो।",
+  tip:"जो रिक्वेस्ट अच्छी चलीं, उन्हें सेव कर लें ताकि बाद में फिर इस्तेमाल कर सकें। टेम्पलेट पेज पर कई तैयार रिक्वेस्ट हैं।",
+  task:"इस हफ़्ते के किसी असली काम के लिए रिक्वेस्ट लिखें, जो कुछ भी आपने सीखा उसका इस्तेमाल करके।",
+  quiz:[{q:"AI को अपने लिए उपयोगी बनाने का सबसे तेज़ तरीका क्या है?", o:["इस हफ़्ते के किसी असली काम पर आज़माएँ","पहले महीनों तक AI के बारे में पढ़ें"]},
+        {q:"जो रिक्वेस्ट अच्छी चलीं, उनका क्या करें?", o:["बाद में दोबारा इस्तेमाल के लिए सेव करें","उन्हें डिलीट कर दें"]}]},
+ te:{title:"రోజువారీ విజయాలు", sub:"ఈమెయిల్స్, ప్లాన్లు, వివరణలు, ఆలోచనలు",
+  body:`<p>ఇప్పుడు అన్నీ కలిపి వాడండి. రోజువారీ ప్రసిద్ధ ఉపయోగాలు: మర్యాదపూర్వకమైన ఈమెయిల్ రాయడం, వారపు చదువు లేదా భోజన ప్లాన్ చేయడం, పిల్లలకు ఒక విషయం వివరించడం, ఇంటర్వ్యూకు సిద్ధమవడం, పేర్లు లేదా ఆలోచనలు సూచించడం.</p><p>ఈ వారం మీకు నిజంగా ఉన్న ఒక చిన్న పనితో మొదలుపెట్టండి. AIని మీకు ఉపయోగపడేలా చేసుకోవడానికి ఇదే వేగమైన మార్గం.</p>`,
+  weak:"ఒక ఈమెయిల్ రాయి.", strong:"ఈ వారంలో కారుతున్న కుళాయిని బాగుచేయించమని నా ఇంటి యజమానికి ఒక చిన్న, మర్యాదపూర్వకమైన ఈమెయిల్ రాయి. నేను ఫ్లాట్ 3Bలో అద్దెకు ఉంటున్నాను. స్నేహపూర్వకంగా కానీ స్పష్టంగా ఉండాలి.",
+  tip:"బాగా పనిచేసిన అభ్యర్థనలను తర్వాత మళ్లీ వాడుకోవడానికి సేవ్ చేసుకోండి. టెంప్లేట్ల పేజీలో చాలా సిద్ధంగా ఉన్నాయి.",
+  task:"మీరు నేర్చుకున్నదంతా ఉపయోగించి, ఈ వారం మీకున్న ఒక నిజమైన పని కోసం అభ్యర్థన రాయండి.",
+  quiz:[{q:"AIని మీకు ఉపయోగపడేలా చేసుకోవడానికి వేగమైన మార్గం ఏది?", o:["ఈ వారం మీకున్న నిజమైన పనిపై ప్రయత్నించడం","ముందు నెలల తరబడి AI గురించి చదవడం"]},
+        {q:"బాగా పనిచేసిన అభ్యర్థనలను ఏం చేయాలి?", o:["తర్వాత మళ్లీ వాడుకోవడానికి సేవ్ చేయడం","వాటిని డిలీట్ చేయడం"]}]}},
+{mins:5, ans:[1,2], plainStrong:true,
+ en:{title:"Stay safe with AI", sub:"Spot scams, fake voices, and fake offers", wl:"Scam sign", sl:"Safe habit",
+  body:`<p>Criminals use AI too. They can copy a family member’s voice from a short video, make fake videos of famous people, and write very convincing messages.</p><p>Simple rules: if a call or message urgently asks for money or an OTP, stop. Hang up and call the person back on the number you already have. No genuine bank, police officer, or company will ask for your OTP or PIN. Be very careful with “AI trading” or investment apps that promise guaranteed profits.</p>`,
+  weak:"Mom, I’m in trouble. Send {money} to this number right now and don’t tell anyone.", strong:"Hang up, then call your son back on the number saved in your phone before you do anything.",
+  tip:"Agree on a family code word that only you know, so you can check it’s really them.",
+  task:"Ask Claude to list 5 warning signs of a fake call or message, in simple words for your parents.",
+  quiz:[{q:"Someone calls with your relative’s voice, urgently asking for money. What do you do?", o:["Send the money quickly","Hang up and call them back on their saved number"]},
+        {q:"Who will ask for your OTP?", o:["Your bank","The police","No genuine organization"]}]},
+ hi:{title:"AI के साथ सुरक्षित रहें", sub:"स्कैम, नकली आवाज़ और नकली ऑफ़र पहचानें", wl:"स्कैम का संकेत", sl:"सुरक्षित आदत",
+  body:`<p>अपराधी भी अब AI का इस्तेमाल करते हैं। वे किसी छोटे वीडियो से आपके परिवार के सदस्य की आवाज़ की नकल कर सकते हैं, मशहूर लोगों के नकली वीडियो बना सकते हैं, और बहुत भरोसेमंद लगने वाले मैसेज लिख सकते हैं।</p><p>आसान नियम: अगर कोई कॉल या मैसेज जल्दी में पैसे या OTP माँगे, तो रुकें। फ़ोन काटें और उस व्यक्ति को उसी नंबर पर वापस कॉल करें जो आपके पास पहले से है। कोई असली बैंक, पुलिस अधिकारी या कंपनी आपका OTP या PIN नहीं माँगेगी। “AI ट्रेडिंग” या पक्के मुनाफ़े का वादा करने वाले निवेश ऐप से बहुत सावधान रहें।</p>`,
+  weak:"माँ, मैं मुसीबत में हूँ। अभी इस नंबर पर {money} भेजो और किसी को मत बताना।", strong:"फ़ोन काटें, और कुछ भी करने से पहले बेटे को फ़ोन में सेव नंबर पर वापस कॉल करें।",
+  tip:"परिवार में एक कोड शब्द तय करें जो सिर्फ़ आप जानते हों, ताकि पक्का कर सकें कि सच में वही हैं।",
+  task:"Claude से कहें कि वह आपके माता-पिता के लिए आसान शब्दों में नकली कॉल या मैसेज के 5 चेतावनी संकेत बताए।",
+  quiz:[{q:"कोई आपके रिश्तेदार की आवाज़ में फ़ोन करके जल्दी पैसे माँगता है। आप क्या करेंगे?", o:["जल्दी से पैसे भेज देंगे","फ़ोन काटकर उनके सेव नंबर पर वापस कॉल करेंगे"]},
+        {q:"आपका OTP कौन माँगेगा?", o:["आपका बैंक","पुलिस","कोई भी असली संस्था नहीं"]}]},
+ te:{title:"AIతో సురక్షితంగా ఉండండి", sub:"మోసాలు, నకిలీ గొంతులు, నకిలీ ఆఫర్లను గుర్తించండి", wl:"మోసం సంకేతం", sl:"సురక్షిత అలవాటు",
+  body:`<p>నేరగాళ్లు కూడా ఇప్పుడు AI వాడుతున్నారు. చిన్న వీడియో నుంచే మీ కుటుంబ సభ్యుల గొంతును అనుకరించగలరు, ప్రముఖుల నకిలీ వీడియోలు తయారుచేయగలరు, చాలా నమ్మకంగా అనిపించే మెసేజ్‌లు రాయగలరు.</p><p>సులభమైన నియమాలు: ఏదైనా కాల్ లేదా మెసేజ్ అత్యవసరంగా డబ్బు లేదా OTP అడిగితే, ఆగండి. ఫోన్ పెట్టేసి, మీ దగ్గర ఇప్పటికే ఉన్న నంబర్‌కు ఆ వ్యక్తికి తిరిగి కాల్ చేయండి. నిజమైన బ్యాంక్, పోలీసు అధికారి లేదా కంపెనీ ఎవరూ మీ OTP లేదా PIN అడగరు. “AI ట్రేడింగ్” లేదా ఖచ్చితమైన లాభాలు ఇస్తామనే పెట్టుబడి యాప్‌లతో చాలా జాగ్రత్తగా ఉండండి.</p>`,
+  weak:"అమ్మా, నేను ఇబ్బందిలో ఉన్నాను. ఇప్పుడే ఈ నంబర్‌కు {money} పంపు, ఎవరికీ చెప్పకు.", strong:"ఫోన్ పెట్టేసి, ఏమైనా చేసే ముందు మీ ఫోన్‌లో సేవ్ చేసిన నంబర్‌కు మీ అబ్బాయికి తిరిగి కాల్ చేయండి.",
+  tip:"మీకు మాత్రమే తెలిసిన ఒక కుటుంబ కోడ్ పదాన్ని ఒప్పుకోండి, నిజంగా వాళ్లేనా అని తెలుసుకోవడానికి.",
+  task:"మీ తల్లిదండ్రుల కోసం నకిలీ కాల్ లేదా మెసేజ్‌కు సంబంధించిన 5 హెచ్చరిక సంకేతాలను సులభమైన మాటల్లో చెప్పమని Claudeను అడగండి.",
+  quiz:[{q:"ఎవరో మీ బంధువు గొంతుతో కాల్ చేసి అత్యవసరంగా డబ్బు అడుగుతున్నారు. మీరు ఏం చేస్తారు?", o:["వెంటనే డబ్బు పంపడం","ఫోన్ పెట్టేసి, వారి సేవ్ చేసిన నంబర్‌కు తిరిగి కాల్ చేయడం"]},
+        {q:"మీ OTP ఎవరు అడుగుతారు?", o:["మీ బ్యాంక్","పోలీసులు","ఏ నిజమైన సంస్థా అడగదు"]}]}}
+];
+
+const TEMPLATES = [
+ {pack:"students", title:"Exam notes", text:"Here are my notes on [topic]: [paste notes]. Turn them into 10 key points I can revise the night before my exam. Keep each point short and simple."},
+ {pack:"students", title:"Viva practice", text:"I have a viva on my project about [project topic]. Ask me 5 likely viva questions one at a time, wait for my answer, then tell me how to improve it."},
+ {pack:"students", title:"Explain it simply", text:"Explain [concept] like I’m a first-year student. Use one real-life example from everyday life in [your country] and keep it under 150 words."},
+ {pack:"students", title:"Study timetable", text:"Make a 7-day study timetable for my [subject] exam on [date]. I can study [hours] hours a day and I’m weakest in [topics]. Show it as a simple table."},
+ {pack:"job", title:"Better resume line", text:"Improve this resume bullet for a [role] internship: “[your line]”. Give 3 versions that start with an action verb and include a number or result."},
+ {pack:"job", title:"Mock interview", text:"Act as an interviewer for a [role] role at a [company type]. Ask me 5 questions one by one, wait for my answer each time, and give me honest feedback."},
+ {pack:"job", title:"Cover letter", text:"Write a short, friendly cover letter for [role] at [company]. I’m a [your background] and my strongest skills are [skills]. Keep it under 200 words."},
+ {pack:"job", title:"Follow-up email", text:"Write a polite follow-up email to [name] after my interview for [role] on [date]. Thank them and say I’m still very interested. Keep it to 5 lines."},
+ {pack:"business", title:"Instagram captions", text:"Write 3 short Instagram captions for my [product] at my [shop type] in [city]. Make them warm and fun, and add 5 relevant hashtags to each."},
+ {pack:"business", title:"Reply to a review", text:"A customer left this review: “[review]”. Write a polite, calm reply that thanks them and offers to fix the problem. Keep it under 60 words."},
+ {pack:"business", title:"Festival offer message", text:"Write a WhatsApp message for my customers about a [festival] offer: [offer details], valid till [date]. Make it friendly and short, with one emoji."},
+ {pack:"business", title:"Product description", text:"Write a 50-word product description for [product] for my online shop. It’s for [type of customer] and the best features are [features]."},
+ {pack:"teachers", title:"Lesson plan", text:"Make a 40-minute lesson plan on [topic] for class [grade]. Include a 5-minute warm-up, one group activity, and 3 check questions."},
+ {pack:"teachers", title:"Quiz questions", text:"Write 10 multiple-choice questions on [topic] for class [grade], with answers. Mix easy and medium questions."},
+ {pack:"teachers", title:"Simpler explanation", text:"Rewrite this explanation so a class [grade] student can understand it: [paste text]. Use short sentences and one everyday example."},
+ {pack:"teachers", title:"Message to parents", text:"Write a kind, clear message to parents about [topic, like the exam schedule]. Keep it short and easy to read on WhatsApp."},
+ {pack:"everyday", title:"Complaint email", text:"Write a polite but firm email to [company] about [problem]. My order number is [number]. Ask them to fix it within [days] days."},
+ {pack:"everyday", title:"Weekly meal plan", text:"Make a simple weekly [vegetarian / non-vegetarian] meal plan for a family of [number], using cheap, easy-to-find ingredients. Show it as a table."},
+ {pack:"everyday", title:"Explain a letter or bill", text:"Explain this letter or bill in simple words and tell me what I need to do next: [paste text, with account numbers removed]."},
+ {pack:"everyday", title:"Questions for my doctor", text:"I have a doctor’s appointment about [concern]. List the questions I should ask, in simple words, so I don’t forget anything."}
+];
+
+const GOALS = {
+ write:{any:["Claude","Grammarly","QuillBot"], student:["Claude","QuillBot","Grammarly"], job:["Claude","Grammarly","ChatGPT"], business:["Claude","Copy.ai","Grammarly"], teacher:["Claude","Khanmigo","Grammarly"]},
+ study:{any:["NotebookLM","Perplexity","Claude"], student:["NotebookLM","Khanmigo","Photomath","Perplexity"], job:["Perplexity","NotebookLM","Claude"], teacher:["NotebookLM","Khanmigo","Claude"], business:["Perplexity","Claude","NotebookLM"]},
+ images:{any:["Canva","Adobe Firefly","Ideogram"], business:["Canva","Photoroom","Ideogram"], student:["Canva","Microsoft Designer","Adobe Firefly"], teacher:["Canva","Microsoft Designer","Napkin AI"], job:["Canva","Microsoft Designer","Adobe Firefly"]},
+ video:{any:["Clipchamp","Descript","OpusClip"], business:["OpusClip","HeyGen","Clipchamp"], teacher:["Synthesia","Clipchamp","Descript"], student:["Clipchamp","Descript","Runway"], job:["Descript","Clipchamp","HeyGen"]},
+ slides:{any:["Gamma","Canva","Beautiful.ai"], teacher:["Gamma","Canva","Napkin AI"]},
+ meetings:{any:["Otter.ai","Fathom","Fireflies.ai"], student:["Otter.ai","NotebookLM","Fathom"], teacher:["Otter.ai","Loom","Fathom"]},
+ build:{any:["Lovable","Replit","Claude"], student:["GitHub Copilot","Claude Code","Cursor"], job:["Claude Code","Cursor","GitHub Copilot"], business:["Lovable","Replit","Bolt"]},
+ language:{any:["Google Translate","DeepL","Duolingo"], business:["Google Translate","DeepL","HeyGen"]},
+ voice:{any:["ElevenLabs","Speechify","Suno"], student:["Speechify","Wispr Flow","ElevenLabs"], teacher:["Speechify","ElevenLabs","Adobe Podcast"]},
+ automate:{any:["Zapier","Julius AI","n8n"], student:["Julius AI","Google AI Studio","n8n"], business:["Zapier","Julius AI","Claude"]}
+};
+
+const TOOLS = [
+  // Chat assistants
+  {c:"Chat assistants", n:"Claude", u:"https://claude.ai", use:"Writing, explaining hard topics, reading long documents and PDFs, planning, and coding help.", where:"Web, iPhone, Android, Mac and Windows apps", how:["Go to claude.ai and sign up with your email or Google account.","Type your request using the four ingredients: what, background, shape, and tone.","Use the paperclip to attach a PDF or photo, then ask questions about it."], who:"Founders: Dario and Daniela Amodei (Anthropic)", p:"Dario Amodei"},
+  {c:"Chat assistants", n:"ChatGPT", u:"https://chatgpt.com", use:"All-round assistant for questions, writing, brainstorming, images, and voice chats.", where:"Web, iPhone, Android, Mac and Windows apps", how:["Open chatgpt.com. You can try it without an account, or sign up to save chats.","Type or speak your question.","Ask follow-ups like “make it simpler” to improve the answer."], who:"Made by OpenAI, CEO Sam Altman", p:"Sam Altman"},
+  {c:"Chat assistants", n:"Gemini", u:"https://gemini.google.com", use:"Google’s assistant. Handy if you already use Gmail, Docs, Drive, and YouTube.", where:"Web, Android, iPhone, and inside Google apps", how:["Sign in with your Google account at gemini.google.com.","Ask a question, or upload a photo or file.","Ask it to work with your Google apps, like “summarize my latest emails about the trip”."], who:"Made by Google DeepMind, CEO Demis Hassabis", p:"Demis Hassabis"},
+  {c:"Chat assistants", n:"Microsoft Copilot", u:"https://copilot.microsoft.com", use:"Microsoft’s assistant for questions and writing, and help inside Word, Excel, and PowerPoint.", where:"Web, Windows, iPhone, Android, and Microsoft 365 apps", how:["Open copilot.microsoft.com or the Copilot app on Windows.","Sign in with a Microsoft account to save your chats.","In Word or PowerPoint, look for the Copilot button to draft or summarize."], who:"Led by Microsoft AI CEO Mustafa Suleyman", p:"Mustafa Suleyman"},
+  {c:"Chat assistants", n:"Meta AI", u:"https://www.meta.ai", use:"Quick answers and images right inside WhatsApp, Instagram, and Facebook.", where:"WhatsApp, Instagram, Facebook, Messenger, and web", how:["In WhatsApp, tap the Meta AI circle icon, or open a new chat with Meta AI.","Ask anything, or type “imagine” followed by a picture description.","Remember: don’t share private details in any AI chat."], who:"Made by Meta, CEO Mark Zuckerberg", p:"Mark Zuckerberg Meta AI"},
+  {c:"Chat assistants", n:"Grok", u:"https://grok.com", use:"Assistant from xAI, known for up-to-date answers from posts on X.", where:"Web, iPhone, Android, and inside X", how:["Open grok.com or the Grok button in the X app.","Ask a question about news or a topic.","Check its sources, since posts on X can be wrong."], who:"Made by xAI, founded by Elon Musk", p:"Elon Musk xAI Grok"},
+  {c:"Chat assistants", n:"DeepSeek", u:"https://chat.deepseek.com", use:"Free assistant that’s strong at math, logic, and coding problems.", where:"Web, iPhone, Android", how:["Open chat.deepseek.com and sign up.","Turn on the reasoning mode for step-by-step math or logic.","Avoid sharing personal or work data, and read its privacy policy first."], who:"Founder: Liang Wenfeng", p:"Liang Wenfeng DeepSeek"},
+  {c:"Chat assistants", n:"Le Chat (Mistral)", u:"https://chat.mistral.ai", use:"Fast European assistant for writing, questions, and documents.", where:"Web, iPhone, Android", how:["Open chat.mistral.ai and sign up.","Ask your question or upload a document.","Try it in French, Spanish, or other languages too."], who:"Co-founder and CEO: Arthur Mensch", p:"Arthur Mensch"},
+
+  // Research & study
+  {c:"Research & study", n:"Perplexity", u:"https://www.perplexity.ai", use:"Searching the web and getting a short answer with links to sources.", where:"Web, iPhone, Android, desktop apps", how:["Open perplexity.ai and type a question like you would in Google.","Read the answer, then click the numbered sources to check them.","Ask follow-up questions to dig deeper."], who:"Co-founder and CEO: Aravind Srinivas", p:"Aravind Srinivas"},
+  {c:"Research & study", n:"NotebookLM", u:"https://notebooklm.google.com", use:"Studying from your own notes, PDFs, and videos. It can make quizzes, flashcards, and podcast-style audio summaries.", where:"Web, iPhone, Android", how:["Sign in with Google and create a new notebook.","Add your sources: PDFs, Google Docs, website links, or YouTube links.","Ask questions, or tap Audio Overview to hear a spoken summary."], who:"Made by Google Labs"},
+  {c:"Research & study", n:"Consensus", u:"https://consensus.app", use:"Finding what scientific research papers say about a question.", where:"Web", how:["Open consensus.app and type a yes/no style question, like “does sleep improve memory?”.","Read the summary of what studies found.","Open the papers listed to read more."], who:"Co-founder and CEO: Eric Olson", p:"Eric Olson Consensus"},
+  {c:"Research & study", n:"Elicit", u:"https://elicit.com", use:"Searching and summarizing research papers for projects and literature reviews.", where:"Web", how:["Sign up at elicit.com.","Type your research question.","Use the table view to compare papers side by side."], who:"Made by Elicit"},
+  {c:"Research & study", n:"Khanmigo", u:"https://www.khanmigo.ai", use:"A patient AI tutor from Khan Academy that guides you to the answer instead of just giving it.", where:"Web", how:["Open khanmigo.ai and sign up.","Pick a subject, like math or science.","Explain where you’re stuck. It will ask questions to guide you."], who:"Founder of Khan Academy: Sal Khan", p:"Sal Khan Khanmigo"},
+  {c:"Research & study", n:"Google Lens", u:"https://lens.google", use:"Point your camera at anything: identify plants, translate signs, or get homework help.", where:"Android, iPhone (Google app), Chrome", how:["Open the Google app and tap the camera icon.","Point at a plant, product, sign, or math problem.","Choose Search, Translate, or Homework."], who:"Made by Google"},
+  {c:"Research & study", n:"Photomath", u:"https://photomath.com", use:"Scanning math problems and seeing step-by-step solutions.", where:"iPhone, Android", how:["Install Photomath from your app store.","Point the camera at a math problem.","Tap the steps to understand each one, not just the answer."], who:"Made by Google"},
+
+  // Writing
+  {c:"Writing", n:"Grammarly", u:"https://www.grammarly.com", use:"Fixing grammar, spelling, and tone as you type in email, docs, and websites.", where:"Browser extension, Windows, Mac, iPhone and Android keyboard", how:["Install the Grammarly extension or app.","Write as normal. Underlines show suggestions.","Accept only the changes that sound like you."], who:"Co-founders: Max Lytvyn and Alex Shevchenko. Now part of Superhuman, led by Shishir Mehrotra", p:"Shishir Mehrotra"},
+  {c:"Writing", n:"QuillBot", u:"https://quillbot.com", use:"Rephrasing, shortening, and simplifying sentences.", where:"Web, browser extension, Word add-in", how:["Open quillbot.com and pick Paraphraser.","Paste a sentence and choose a mode, like Simple or Formal.","Compare versions and keep the one you like."], who:"Co-founder: Rohan Gupta", p:"Rohan Gupta QuillBot"},
+  {c:"Writing", n:"Notion AI", u:"https://www.notion.com", use:"Writing, organizing notes, and asking questions about your own pages.", where:"Web, Windows, Mac, iPhone, Android", how:["Create a free Notion account.","Make a page and press space to ask AI to write or summarize.","Ask questions about your notes to find things quickly."], who:"Co-founder and CEO: Ivan Zhao", p:"Ivan Zhao"},
+  {c:"Writing", n:"Jasper", u:"https://www.jasper.ai", use:"Marketing teams writing ads, social posts, and blogs in their brand voice.", where:"Web, browser extension", how:["Start a trial at jasper.ai.","Set up your brand voice with examples of your writing.","Pick a template, like a social post, and fill in the details."], who:"Made by Jasper"},
+  {c:"Writing", n:"Copy.ai", u:"https://www.copy.ai", use:"Sales and marketing writing, like emails and product descriptions.", where:"Web", how:["Sign up at copy.ai.","Choose a workflow or chat.","Give it your product details and audience, then edit the draft."], who:"Made by Copy.ai"},
+
+  // Images & design
+  {c:"Images & design", n:"Canva", u:"https://www.canva.com", use:"Posters, social posts, resumes, and slides, with AI to write text and make images.", where:"Web, Windows, Mac, iPhone, Android", how:["Sign up at canva.com (free).","Search a template, like “Instagram post” or “resume”.","Use Magic features to write text or generate images, then edit."], who:"Co-founder and CEO: Melanie Perkins", p:"Melanie Perkins"},
+  {c:"Images & design", n:"Adobe Firefly", u:"https://firefly.adobe.com", use:"Creating and editing images from a description. Made to be safe for commercial use.", where:"Web, iPhone, Android, and inside Photoshop", how:["Sign in with a free Adobe account.","Type a description: subject, style, colors, and mood.","Use Generative Fill to add or remove parts of a photo."], who:"Made by Adobe"},
+  {c:"Images & design", n:"Midjourney", u:"https://www.midjourney.com", use:"Very artistic, high-quality images and illustrations.", where:"Web, Discord", how:["Sign up at midjourney.com (it’s a paid tool).","Type a detailed description in the prompt box.","Pick a favorite and use Vary or Upscale to refine it."], who:"Founder: David Holz", p:"David Holz Midjourney"},
+  {c:"Images & design", n:"Leonardo.ai", u:"https://leonardo.ai", use:"Images for games, products, and characters, with many style presets.", where:"Web, iPhone, Android", how:["Sign up at leonardo.ai.","Choose a style preset and type your description.","Use the canvas to edit or extend the image."], who:"Now part of Canva"},
+  {c:"Images & design", n:"Ideogram", u:"https://ideogram.ai", use:"Images with clear, readable text, great for posters and logos.", where:"Web, iPhone", how:["Sign up at ideogram.ai.","Put the words you want in quotes, like a poster that says “Grand Opening”.","Choose a style and generate."], who:"Made by Ideogram"},
+  {c:"Images & design", n:"Krea", u:"https://www.krea.ai", use:"Real-time image drawing, upscaling blurry images, and quick video clips.", where:"Web", how:["Sign up at krea.ai.","Try the real-time tool: draw shapes and watch them turn into an image.","Use Enhance to sharpen low-quality pictures."], who:"Made by Krea"},
+  {c:"Images & design", n:"Microsoft Designer", u:"https://designer.microsoft.com", use:"Quick invitations, social posts, and images from a description.", where:"Web, Windows, iPhone, Android", how:["Sign in with a Microsoft account.","Describe what you need, like “birthday invite with balloons”.","Pick a design and change the text."], who:"Made by Microsoft"},
+  {c:"Images & design", n:"Photoroom", u:"https://www.photoroom.com", use:"Clean product photos for online shops: remove backgrounds and add new ones.", where:"iPhone, Android, web", how:["Install Photoroom or open the website.","Upload a product photo. The background is removed for you.","Pick a new background or template and export."], who:"Co-founder and CEO: Matthieu Rouif", p:"Matthieu Rouif Photoroom"},
+  {c:"Images & design", n:"remove.bg", u:"https://www.remove.bg", use:"Removing the background from any photo in seconds.", where:"Web, Windows, Mac", how:["Open remove.bg.","Upload your image.","Download the cut-out picture."], who:"Now part of Canva"},
+  {c:"Images & design", n:"Napkin AI", u:"https://www.napkin.ai", use:"Turning your text into simple diagrams and visuals for notes or slides.", where:"Web", how:["Sign up at napkin.ai.","Paste or type a paragraph.","Click the spark icon next to it to get diagram options."], who:"Made by Napkin"},
+
+  // Video
+  {c:"Video", n:"CapCut", u:"https://www.capcut.com", use:"Editing Reels and Shorts with auto captions, templates, and effects.", where:"iPhone, Android, Windows, Mac, web", notIn:["IN"], how:["Install CapCut.","Import your clips and tap Auto captions.","Pick a template or trending effect, then export."], who:"Made by ByteDance"},
+  {c:"Video", n:"Runway", u:"https://runwayml.com", use:"Creating short AI video clips from text or images, and video effects.", where:"Web, iPhone", how:["Sign up at runwayml.com.","Upload an image or type a scene description.","Generate a short clip, then extend or edit it."], who:"Co-founder and CEO: Cristóbal Valenzuela", p:"Cristobal Valenzuela Runway"},
+  {c:"Video", n:"Pika", u:"https://pika.art", use:"Fun, short AI videos and effects from photos and text.", where:"Web, iPhone", how:["Sign up at pika.art.","Upload a photo or type a description.","Pick an effect and generate."], who:"Co-founder and CEO: Demi Guo", p:"Demi Guo Pika"},
+  {c:"Video", n:"Luma Dream Machine", u:"https://lumalabs.ai", use:"Realistic AI video clips from text or images.", where:"Web, iPhone", how:["Sign up at lumalabs.ai.","Describe a scene or upload a starting image.","Generate and tweak the camera motion."], who:"Co-founder and CEO: Amit Jain", p:"Amit Jain Luma AI"},
+  {c:"Video", n:"Kling AI", u:"https://klingai.com", use:"Longer, realistic AI video clips with natural movement.", where:"Web, iPhone, Android", how:["Sign up at klingai.com.","Choose text-to-video or image-to-video.","Describe the motion you want and generate."], who:"Made by Kuaishou"},
+  {c:"Video", n:"HeyGen", u:"https://www.heygen.com", use:"Talking-avatar videos, and translating your own video into other languages with lip sync.", where:"Web, iPhone, Android", how:["Sign up at heygen.com.","Pick an avatar or record your own.","Paste your script, or upload a video to translate."], who:"Co-founder and CEO: Joshua Xu", p:"Joshua Xu HeyGen"},
+  {c:"Video", n:"Synthesia", u:"https://www.synthesia.io", use:"Training and explainer videos with AI presenters, used by many companies.", where:"Web", how:["Sign up at synthesia.io.","Choose a template and an AI presenter.","Type your script and generate the video."], who:"Co-founder and CEO: Victor Riparbelli", p:"Victor Riparbelli"},
+  {c:"Video", n:"Descript", u:"https://www.descript.com", use:"Editing videos and podcasts by editing the text transcript, like a document.", where:"Web, Windows, Mac", how:["Install Descript and import your recording.","It transcribes the audio. Delete words in the text to cut the video.","Use Remove filler words to clean up “um” and “uh”."], who:"Founder: Andrew Mason", p:"Andrew Mason Descript"},
+  {c:"Video", n:"OpusClip", u:"https://www.opus.pro", use:"Turning one long video into many short clips for Reels and Shorts.", where:"Web", how:["Sign up at opus.pro.","Paste a YouTube link or upload a long video.","Pick the best clips it finds, then export."], who:"Made by OpusClip"},
+  {c:"Video", n:"Clipchamp", u:"https://clipchamp.com", use:"Simple video editing with auto captions and AI voiceovers, built into Windows.", where:"Windows, web", how:["Open Clipchamp from the Windows Start menu.","Drag in your clips and music.","Use Auto captions or Text to speech, then export."], who:"Made by Microsoft"},
+
+  // Audio & voice
+  {c:"Audio & voice", n:"ElevenLabs", u:"https://elevenlabs.io", use:"Very natural AI voiceovers, audiobooks, and dubbing in many languages.", where:"Web, iPhone, Android", how:["Sign up at elevenlabs.io.","Paste your text and pick a voice.","Generate and download the audio."], who:"Co-founder and CEO: Mati Staniszewski", p:"Mati Staniszewski"},
+  {c:"Audio & voice", n:"Suno", u:"https://suno.com", use:"Making full songs, with vocals, from a short description.", where:"Web, iPhone, Android", how:["Sign up at suno.com.","Describe a song: style, mood, and topic.","Generate, then extend or remix your favorite."], who:"Co-founder and CEO: Mikey Shulman", p:"Mikey Shulman Suno"},
+  {c:"Audio & voice", n:"Speechify", u:"https://speechify.com", use:"Listening to articles, PDFs, and books read aloud. Great for studying and reading difficulties.", where:"Browser extension, iPhone, Android, Mac", how:["Install the Speechify app or extension.","Open a web page or upload a PDF.","Press play and adjust the speed."], who:"Founder: Cliff Weitzman", p:"Cliff Weitzman"},
+  {c:"Audio & voice", n:"Wispr Flow", u:"https://wisprflow.ai", use:"Speaking instead of typing, in any app. It cleans up your words as you talk.", where:"Mac, Windows, iPhone", how:["Install Wispr Flow.","Hold the shortcut key and speak.","Your cleaned-up text appears where your cursor is."], who:"Co-founder and CEO: Tanay Kothari", p:"Tanay Kothari Wispr"},
+  {c:"Audio & voice", n:"Adobe Podcast", u:"https://podcast.adobe.com", use:"Making voice recordings sound studio-clean with Enhance Speech.", where:"Web", how:["Open podcast.adobe.com and sign in.","Upload a voice recording to Enhance Speech.","Download the cleaner version."], who:"Made by Adobe"},
+
+  // Meetings & notes
+  {c:"Meetings & notes", n:"Otter.ai", u:"https://otter.ai", use:"Live transcripts and summaries of meetings and lectures.", where:"Web, iPhone, Android, Zoom, Google Meet, Teams", how:["Sign up at otter.ai.","Press record on your phone, or connect it to your calendar to join online meetings.","Read the summary and action items afterwards."], who:"Co-founder and CEO: Sam Liang", p:"Sam Liang Otter"},
+  {c:"Meetings & notes", n:"Fireflies.ai", u:"https://fireflies.ai", use:"Recording, transcribing, and searching your team’s meetings.", where:"Web, iPhone, Android, Zoom, Google Meet, Teams", how:["Sign up and connect your calendar.","The notetaker joins your online meetings.","Search past meetings or ask questions about them."], who:"Co-founder and CEO: Krish Ramineni", p:"Krish Ramineni"},
+  {c:"Meetings & notes", n:"Fathom", u:"https://fathom.video", use:"Free meeting notes that highlight key moments in Zoom, Meet, and Teams calls.", where:"Web, Zoom, Google Meet, Teams", how:["Sign up at fathom.video.","Connect your meeting app.","Get a summary in your inbox after each call."], who:"Founder and CEO: Richard White", p:"Richard White Fathom"},
+  {c:"Meetings & notes", n:"Loom", u:"https://www.loom.com", use:"Recording quick screen videos, with AI titles, summaries, and chapters.", where:"Browser extension, Windows, Mac, iPhone, Android", how:["Install the Loom extension or app.","Record your screen and camera.","Share the link. AI adds a title and summary."], who:"Now part of Atlassian"},
+
+  // Presentations
+  {c:"Presentations", n:"Gamma", u:"https://gamma.app", use:"Turning a topic or outline into a ready presentation, document, or web page.", where:"Web", how:["Sign up at gamma.app.","Type your topic, or paste your outline.","Pick a theme, generate, then edit any slide."], who:"Co-founder and CEO: Grant Lee", p:"Grant Lee Gamma"},
+  {c:"Presentations", n:"Beautiful.ai", u:"https://www.beautiful.ai", use:"Slides that keep their layout neat automatically as you add content.", where:"Web", how:["Start at beautiful.ai.","Describe your presentation, or pick a template.","Add content. The design adjusts itself."], who:"Made by Beautiful.ai"},
+
+  // Coding & building
+  {c:"Coding & building", n:"Claude Code", u:"https://www.claude.com/product/claude-code", use:"An AI coding helper that can read your project, write code, and fix bugs for you.", where:"Terminal, VS Code, JetBrains, desktop app, web", how:["Install it following the guide on the Claude Code page.","Open your project folder and describe what you want built or fixed.","Review each change before you accept it."], who:"Made by Anthropic", p:"Boris Cherny Claude Code"},
+  {c:"Coding & building", n:"GitHub Copilot", u:"https://github.com/features/copilot", use:"Code suggestions and chat right inside your code editor. Free for verified students.", where:"VS Code, JetBrains, Visual Studio, GitHub website", how:["Sign in to GitHub and turn on Copilot (students can apply for free access through GitHub Education).","Install the Copilot extension in VS Code.","Start typing code, or ask questions in the Copilot chat panel."], who:"Made by GitHub (Microsoft)"},
+  {c:"Coding & building", n:"Cursor", u:"https://cursor.com", use:"A code editor built around AI that can edit many files at once.", where:"Windows, Mac, Linux", how:["Download Cursor from cursor.com.","Open your project folder.","Press the chat shortcut and describe the change you want."], who:"Co-founder and CEO: Michael Truell", p:"Michael Truell Cursor"},
+  {c:"Coding & building", n:"Windsurf", u:"https://windsurf.com", use:"An AI code editor with an agent that can plan and make changes for you.", where:"Windows, Mac, Linux", how:["Download Windsurf.","Open a project.","Ask the agent panel to build or fix something."], who:"Now part of Cognition"},
+  {c:"Coding & building", n:"Replit", u:"https://replit.com", use:"Building and publishing apps in the browser by describing them. No setup needed.", where:"Web, iPhone, Android", how:["Sign up at replit.com.","Describe the app you want to the Agent.","Test it, ask for changes, then publish."], who:"Co-founder and CEO: Amjad Masad", p:"Amjad Masad"},
+  {c:"Coding & building", n:"Lovable", u:"https://lovable.dev", use:"Building websites and web apps just by chatting. Good for first-time builders.", where:"Web", how:["Sign up at lovable.dev.","Describe your app in simple words.","Click on parts of the preview to change them, then publish."], who:"Co-founder and CEO: Anton Osika", p:"Anton Osika Lovable"},
+  {c:"Coding & building", n:"Bolt", u:"https://bolt.new", use:"Building full web apps from a prompt, right in the browser.", where:"Web", how:["Open bolt.new and sign in.","Describe your app.","Edit with follow-up messages and deploy."], who:"Co-founder and CEO: Eric Simons", p:"Eric Simons Bolt"},
+  {c:"Coding & building", n:"v0", u:"https://v0.app", use:"Designing and building web pages and apps from a description, by Vercel.", where:"Web", how:["Sign in at v0.app.","Describe the page or app, or upload a screenshot.","Refine it in chat, then deploy."], who:"Made by Vercel, CEO Guillermo Rauch", p:"Guillermo Rauch v0"},
+  {c:"Coding & building", n:"Google AI Studio", u:"https://aistudio.google.com", use:"Trying Google’s AI models for free and building small AI apps.", where:"Web", how:["Sign in with Google at aistudio.google.com.","Try prompts in the playground.","Use Build to make a small app, or get a free API key."], who:"Made by Google"},
+
+  // Automation & data
+  {c:"Automation & data", n:"Zapier", u:"https://zapier.com", use:"Connecting apps to automate boring tasks, like saving email attachments to Drive.", where:"Web", how:["Sign up at zapier.com.","Describe the automation in plain words, or pick a template.","Test it once, then turn it on."], who:"Co-founder and CEO: Wade Foster", p:"Wade Foster Zapier"},
+  {c:"Automation & data", n:"n8n", u:"https://n8n.io", use:"Building powerful automations and AI agents with drag-and-drop blocks. Popular with developers.", where:"Web, or install on your own computer", how:["Start a cloud trial or install it yourself.","Drag in a trigger, then add steps.","Add an AI step to read or write text."], who:"Founder and CEO: Jan Oberhauser", p:"Jan Oberhauser n8n"},
+  {c:"Automation & data", n:"Julius AI", u:"https://julius.ai", use:"Analyzing spreadsheets and making charts by asking questions in plain English.", where:"Web, iPhone", how:["Sign up at julius.ai.","Upload an Excel or CSV file.","Ask questions like “show sales by month as a chart”."], who:"Founder and CEO: Rahul Sonwalkar", p:"Rahul Sonwalkar Julius"},
+
+  // Language learning
+  {c:"Language learning", n:"DeepL", u:"https://www.deepl.com", use:"Natural-sounding translations of text and whole documents.", where:"Web, Windows, Mac, iPhone, Android", how:["Open deepl.com.","Paste text or upload a document.","Click a word to see other options."], who:"Founder and CEO: Jarek Kutylowski", p:"Jarek Kutylowski"},
+  {c:"Language learning", n:"Google Translate", u:"https://translate.google.com", use:"Translating text, signs (with your camera), and live conversations, including Indian languages.", where:"Web, iPhone, Android", how:["Open the app and pick your two languages.","Type, speak, or tap Camera to translate a sign or menu.","Use Conversation mode to talk with someone."], who:"Made by Google"},
+  {c:"Language learning", n:"Duolingo", u:"https://www.duolingo.com", use:"Learning a new language in short daily lessons, with AI practice features.", where:"Web, iPhone, Android", how:["Install Duolingo and pick a language.","Do one short lesson every day.","Use “Explain my answer” when you make a mistake."], who:"Co-founder and CEO: Luis von Ahn", p:"Luis von Ahn"}
+];
+
+const TOOLS_CHECKED = "26 October 2026";
+const CERTS_CHECKED = "26 October 2026";
+const CERTS = [
+  // Free course, free certificate
+  {kind:"free", level:"Beginner", co:"Anthropic", name:"Claude Academy", price:"Free", what:"Free courses on using Claude, from your first chat to Claude Code and the API. Certificates of completion included.", time:"Self-paced, many short courses", url:"https://academy.claude.com"},
+  {kind:"free", level:"Beginner", co:"IBM", name:"AI Fundamentals on IBM SkillsBuild", price:"Free", what:"Six short courses covering what AI is, how it works, and AI ethics. Earn a free IBM digital credential.", time:"About 10 hours", url:"https://skillsbuild.org"},
+  {kind:"free", level:"Beginner", co:"Microsoft", name:"Microsoft Learn AI training", price:"Free", what:"Free learning paths on AI and Microsoft’s AI tools. Some skills challenges give a free certificate of completion.", time:"Self-paced", url:"https://learn.microsoft.com/training"},
+  {kind:"free", level:"Beginner", co:"Google Cloud", name:"Google Cloud Skills Boost", price:"Free", what:"Free intro courses on generative AI, large language models, prompt design, and responsible AI, with skill badges.", time:"Short courses, under an hour each", url:"https://www.cloudskillsboost.google"},
+  {kind:"free", level:"Student", co:"AWS", name:"Fundamentals of Machine Learning and AI", price:"Free", what:"A quick, free introduction to how businesses use AI, on AWS Skill Builder.", time:"About 1 hour", url:"https://skillbuilder.aws"},
+  {kind:"free", level:"Student", co:"Kaggle (Google)", name:"Kaggle Learn", price:"Free", what:"Hands-on mini courses in Python, data, and machine learning, with free certificates. Great for CS and data students.", time:"A few hours per course", url:"https://www.kaggle.com/learn"},
+  // Free to learn, pay for certificate
+  {kind:"fee", level:"Beginner", co:"Google", name:"Google AI Essentials", price:"$49", what:"Learn to use AI tools for everyday work, taught by Google experts. Watch free, pay to get the certificate.", time:"Under 10 hours", url:"https://grow.google/ai-essentials"},
+  {kind:"fee", level:"Beginner", co:"DeepLearning.AI", name:"AI for Everyone", price:"Coursera subscription", what:"Andrew Ng’s famous no-code course on what AI can and can’t do. Free to audit; the certificate needs a Coursera plan.", time:"About 6 hours", url:"https://www.coursera.org/learn/ai-for-everyone"},
+  // Paid certification exams
+  {kind:"exam", level:"Beginner", co:"Google Cloud", name:"Generative AI Leader", price:"$99", what:"Shows you understand generative AI and how businesses use it. No coding needed. Valid for 3 years.", time:"90-minute exam, 50–60 questions", url:"https://cloud.google.com/learn/certification/generative-ai-leader"},
+  {kind:"exam", level:"Beginner", co:"AWS", name:"AWS Certified AI Practitioner", price:"$100", what:"Covers AI, machine learning, and generative AI basics on AWS. No prior AWS certificate needed.", time:"90-minute exam, 65 questions", url:"https://aws.amazon.com/certification/certified-ai-practitioner/"},
+  {kind:"exam", level:"Beginner", co:"Microsoft", name:"Azure AI Fundamentals (AI-901)", price:"Varies by country", what:"Microsoft’s beginner AI certification. The new AI-901 exam replaced AI-900, which retired on 30 June 2026.", time:"Online or at a test center", url:"https://learn.microsoft.com/certifications/azure-ai-fundamentals"},
+  {kind:"exam", level:"Student", co:"Anthropic", name:"Claude Certified Associate, Foundations", price:"$99", note:"Currently only for employees of companies in Anthropic’s Claude Partner Network.", what:"Anthropic’s beginner Claude certification. Developer and Architect exams cost $125, and the Professional exam costs $175.", time:"120-minute exam", url:"https://anthropic-partners.skilljar.com/page/faq-certifications"},
+  {kind:"exam", level:"Student", co:"Google Cloud", name:"Professional Machine Learning Engineer", price:"$200", what:"An advanced certification for building ML systems. All study materials are free; only the exam is paid.", time:"Advanced, plan several months", url:"https://cloud.google.com/learn/certification"}
+];
+
+/* ---------- extra languages and keys ---------- */
+Object.assign(STR.en,{langLabel:"Language", countryLabel:"Country", countryOther:"Other country", textSize:"Text size", skip:"Skip to main content", notHere:"Not available in your country",
+ notAff:"AskWell is an independent learning project. It is not made by, or officially connected to, Anthropic, Claude, or any tool listed here.",
+ aWhy:"Most AI guides are written for tech people. AskWell explains AI in plain words, in five languages, with practice built in."});
+Object.assign(STR.hi,{langLabel:"भाषा", countryLabel:"देश", countryOther:"दूसरा देश", textSize:"अक्षर का आकार", skip:"मुख्य सामग्री पर जाएँ", notHere:"आपके देश में उपलब्ध नहीं",
+ notAff:"AskWell एक स्वतंत्र लर्निंग प्रोजेक्ट है। इसे Anthropic, Claude या यहाँ दिए किसी भी टूल ने नहीं बनाया है, और यह उनसे आधिकारिक रूप से जुड़ा नहीं है।",
+ aWhy:"ज़्यादातर AI गाइड तकनीकी लोगों के लिए लिखी जाती हैं। AskWell AI को आसान शब्दों में, पाँच भाषाओं में, अभ्यास के साथ समझाता है।"});
+Object.assign(STR.te,{langLabel:"భాష", countryLabel:"దేశం", countryOther:"ఇతర దేశం", textSize:"అక్షరాల పరిమాణం", skip:"ప్రధాన కంటెంట్‌కు వెళ్లండి", notHere:"మీ దేశంలో అందుబాటులో లేదు",
+ notAff:"AskWell ఒక స్వతంత్ర లెర్నింగ్ ప్రాజెక్ట్. దీన్ని Anthropic, Claude లేదా ఇక్కడ ఉన్న ఏ టూల్ కూడా తయారు చేయలేదు, వాటితో అధికారికంగా సంబంధం లేదు.",
+ aWhy:"చాలా AI గైడ్‌లు టెక్నికల్ వ్యక్తుల కోసం రాసినవే. AskWell AIని సులభమైన మాటల్లో, ఐదు భాషల్లో, సాధనతో కలిపి వివరిస్తుంది."});
+STR.es={
+ navLessons:"Lecciones", navFinder:"Buscador de herramientas", navTemplates:"Plantillas", navTools:"Herramientas de IA", navCerts:"Certificados", navMyCert:"Mi certificado", navAbout:"Acerca de",
+ progress:"{d} de {n} completadas",
+ heroTitle:"Habla con la IA como hablarías con un amigo que te ayuda.",
+ heroLede:"No necesitas saber de tecnología. Aprende a pedirle a Claude y a otras herramientas de IA exactamente lo que necesitas, en siete lecciones cortas.",
+ heroHint:"Toda buena petición tiene cuatro ingredientes. Escribe una en el cuadro y mira cómo se iluminan.",
+ startLesson:"Empezar la lección 1", findTool:"Encontrar la herramienta adecuada",
+ pathTitle:"Tu camino de aprendizaje", pathSub:"Cada lección dura unos cinco minutos y termina con un pequeño cuestionario.", min:"min",
+ allLessons:"‹ Todas las lecciones", weak:"Petición débil", strong:"Petición fuerte", tip:"Consejo:", yourTurn:"Tu turno: ",
+ listen:"Escuchar esta lección", stop:"Dejar de escuchar",
+ noVoice:"Tu dispositivo todavía no tiene una voz para este idioma. Prueba Chrome en Android o añade el idioma en los ajustes de texto a voz de tu teléfono.",
+ quizTitle:"Cuestionario rápido", quizSub:"Responde bien a las dos preguntas para completar la lección.", check:"Comprobar respuestas",
+ quizPass:"¡Todo correcto! Lección completada.", quizRetry:"Casi. Mira la pregunta marcada e inténtalo de nuevo.", quizMissing:"Elige una respuesta para cada pregunta.",
+ quizDone:"Ya completaste esta lección.",
+ next:"Siguiente lección", getCert:"Obtén tu certificado", certReadyShort:"Terminaste las 7 lecciones. Tu certificado está listo.",
+ helpful:"¿Te ayudó esta lección?", yes:"Sí", no:"No mucho", thanks:"¡Gracias! Tu opinión ayuda a mejorar AskWell.",
+ kLabelHero:"Pruébalo: escribe una petición para Claude", kLabel:"Escribe tu petición",
+ kPlaceholder:"Ejemplo: Explícale a mi hijo de 12 años qué es un presupuesto en 3 puntos cortos y de forma divertida.",
+ ingWhat:"Qué", ingWhatS:"La tarea que quieres", ingBg:"Contexto", ingBgS:"Para quién o por qué", ingShape:"Forma", ingShapeS:"Longitud, lista, pasos", ingTone:"Tono", ingToneS:"Sencillo, amable, formal",
+ scoreEmpty:"Empieza a escribir para ver tus ingredientes.", scoreAll:"Los cuatro ingredientes. ¡Es una gran petición!", scoreSome:"{n} de 4 ingredientes.",
+ scoreLow:"Prueba a añadir para quién es o qué tan largo lo quieres.", scoreAlmost:"Ya casi.",
+ coach:"Recibir consejos de Claude", run:"Enviar a Claude",
+ noSample:"Consejo: abre esta app dentro de Claude para recibir consejos y respuestas en vivo. Los cuadros de ingredientes funcionan en cualquier lugar.",
+ thinking:"Pensando...", typeFirst:"Primero escribe una petición y vuelve a intentarlo.",
+ unavail:"Las respuestas en vivo de Claude no están disponibles aquí, pero los cuadros de ingredientes siguen revisando tu petición.",
+ errDenied:"Claude no tiene permiso en esta página. Aun así puedes practicar: los cuadros de ingredientes funcionan sin él.",
+ errRate:"Hay muchas peticiones a la vez. Espera un minuto y vuelve a intentarlo.", errGen:"Claude no pudo responder ahora. Revisa tu conexión y vuelve a intentarlo.",
+ cWorked:"Lo que funcionó", cTry:"Algo para probar", cBetter:"Una versión más fuerte", cUse:"Usar esta versión",
+ fTitle:"Encuentra la herramienta de IA adecuada", fLede:"Responde tres preguntas rápidas y obtén tus 3 mejores herramientas.",
+ fQ1:"¿Qué quieres hacer?", fQ2:"¿Quién eres?", fQ3:"¿Dónde lo vas a usar?", fShow:"Mostrar mis herramientas", fResult:"Tus 3 mejores herramientas",
+ g_write:"Escribir o corregir textos", g_study:"Estudiar o investigar", g_images:"Crear imágenes o carteles", g_video:"Crear o editar videos", g_slides:"Hacer una presentación",
+ g_meetings:"Tomar notas de reuniones o clases", g_build:"Crear una app o programar", g_language:"Traducir o aprender un idioma", g_voice:"Voz, audio o música", g_automate:"Automatizar tareas o analizar datos",
+ w_student:"Estudiante", w_job:"Busco trabajo", w_business:"Dueño de tienda o negocio", w_teacher:"Docente", w_any:"Solo por curiosidad",
+ d_phone:"Teléfono", d_computer:"Computadora", d_both:"Ambos",
+ detailsEn:"Los detalles de las herramientas están en inglés por ahora.", pageEn:"Esta página está en inglés por ahora.",
+ tTitle:"Plantillas de peticiones listas para usar", tLede:"Copia una plantilla, completa los [corchetes] y pégala en Claude. O pulsa “Practicar con ella” para probarla aquí. También puedes escribir en español.",
+ copy:"Copiar", copied:"Copiado", practice:"Practicar con ella",
+ p_students:"Estudiantes", p_job:"Quienes buscan trabajo", p_business:"Dueños de tiendas", p_teachers:"Docentes", p_everyday:"Vida diaria", p_all:"Todas",
+ toolsTitle:"Directorio de herramientas de IA", toolsLede:"66 herramientas de IA populares que funcionan muy bien, desde asistentes de chat hasta video, música y programación. Cada una muestra para qué sirve, dónde usarla y cómo empezar.",
+ searchLabel:"Buscar herramientas", searchPh:"Busca herramientas, como “video” o “translate”",
+ checked:"Detalles revisados por última vez: {d}", allCount:"Todas ({n})", showing:"Mostrando {n} herramientas", showingOne:"Mostrando 1 herramienta",
+ noMatch:"No hay resultados. Prueba otra palabra, como “video”, “notes” o “translate”.",
+ useFor:"Sirve para:", where:"Dónde:", howStart:"Cómo empezar", videos:"Videos y cursos", open:"Abrir {n}",
+ latest:"Tutoriales recientes", founder:"Charlas del fundador", team:"Escucha al equipo", courses:"Cursos completos", newest:"más recientes primero", byDevs:"de desarrolladores",
+ report:"Informar de un problema", reported:"Gracias, informado.",
+ certTitle:"Tu certificado de AskWell", certLocked:"Completa las 7 lecciones para desbloquear tu certificado. Llevas {d} de 7.",
+ certReady:"¡Lo lograste! Escribe tu nombre tal como quieres que aparezca en el certificado.", yourName:"Tu nombre",
+ makeCert:"Crear mi certificado", download:"Descargar certificado", nameNeeded:"Primero escribe tu nombre.", saved:"Guardado en tu dispositivo.",
+ saveHint:"Para guardarlo, mantén pulsada la imagen (teléfono) o haz clic derecho (computadora).",
+ certNote:"Este es un certificado de finalización de AskWell, no una certificación profesional. Para esas, mira la página de Certificados.",
+ aTitle:"Acerca de AskWell",
+ aWho:"AskWell fue creado por Ananya, estudiante de último año de B.Tech CSE (Ciencia de Datos) en VJIT, Hyderabad, para ayudar a cualquier persona, de cualquier edad, a usar la IA con confianza.",
+ aWhyH:"Por qué existe", aWhy:"La mayoría de las guías de IA están escritas para gente técnica. AskWell explica la IA con palabras sencillas, en cinco idiomas, con práctica incluida.",
+ aPrivH:"Tu privacidad", aPriv:"Tu progreso y el nombre de tu certificado se guardan solo en tu propio navegador. Cuando pulsas un botón de Claude, el texto que escribiste se envía a Claude para obtener una respuesta. Las valoraciones y los informes de problemas se guardan sin tu nombre.",
+ aAccH:"Cómo lo mantenemos correcto", aAcc:"Los detalles de las herramientas y los precios de los cursos se revisan a mano, y cada página muestra cuándo se revisaron por última vez. Si algo parece incorrecto, pulsa “Informar de un problema” en cualquier herramienta.",
+ aGh:"Ver el código en GitHub",
+ langLabel:"Idioma", countryLabel:"País", countryOther:"Otro país", textSize:"Tamaño del texto", skip:"Saltar al contenido principal", notHere:"No disponible en tu país",
+ notAff:"AskWell es un proyecto educativo independiente. No ha sido creado por Anthropic, Claude ni ninguna de las herramientas de esta lista, ni tiene relación oficial con ellos."
+};
+STR.ar={
+ navLessons:"الدروس", navFinder:"اختيار الأداة", navTemplates:"القوالب", navTools:"أدوات الذكاء الاصطناعي", navCerts:"الشهادات", navMyCert:"شهادتي", navAbout:"عن الموقع",
+ progress:"{d} من {n} مكتملة",
+ heroTitle:"تحدّث مع الذكاء الاصطناعي كما تتحدث مع صديق يساعدك.",
+ heroLede:"لا تحتاج إلى خبرة تقنية. تعلّم كيف تطلب من Claude وأدوات الذكاء الاصطناعي الأخرى ما تحتاجه بالضبط، في سبعة دروس قصيرة.",
+ heroHint:"كل طلب جيد يحتوي على أربعة مكونات. اكتب طلبًا في المربع وشاهدها تضيء.",
+ startLesson:"ابدأ الدرس 1", findTool:"اعثر على الأداة المناسبة",
+ pathTitle:"مسار تعلّمك", pathSub:"يستغرق كل درس حوالي خمس دقائق وينتهي باختبار قصير.", min:"دقائق",
+ allLessons:"› كل الدروس", weak:"طلب ضعيف", strong:"طلب قوي", tip:"نصيحة:", yourTurn:"دورك الآن: ",
+ listen:"استمع إلى هذا الدرس", stop:"إيقاف الاستماع",
+ noVoice:"لا يوجد في جهازك صوت لهذه اللغة بعد. جرّب Chrome على Android، أو أضف اللغة من إعدادات تحويل النص إلى كلام في هاتفك.",
+ quizTitle:"اختبار سريع", quizSub:"أجب عن السؤالين بشكل صحيح لإكمال الدرس.", check:"تحقق من الإجابات",
+ quizPass:"كل الإجابات صحيحة. اكتمل الدرس!", quizRetry:"ليس تمامًا. انظر إلى السؤال المميّز وحاول مرة أخرى.", quizMissing:"اختر إجابة لكل سؤال.",
+ quizDone:"لقد أكملت هذا الدرس.",
+ next:"الدرس التالي", getCert:"احصل على شهادتك", certReadyShort:"أنهيت الدروس السبعة. شهادتك جاهزة.",
+ helpful:"هل كان هذا الدرس مفيدًا؟", yes:"نعم", no:"ليس كثيرًا", thanks:"شكرًا! رأيك يساعد في تحسين AskWell.",
+ kLabelHero:"جرّب: اكتب طلبًا إلى Claude", kLabel:"اكتب طلبك",
+ kPlaceholder:"مثال: اشرح لابني ذي الاثني عشر عامًا ما هي الميزانية في 3 نقاط قصيرة وبطريقة ممتعة.",
+ ingWhat:"ماذا", ingWhatS:"المهمة التي تريدها", ingBg:"الخلفية", ingBgS:"لمن أو لماذا", ingShape:"الشكل", ingShapeS:"الطول، قائمة، خطوات", ingTone:"الأسلوب", ingToneS:"بسيط، ودود، رسمي",
+ scoreEmpty:"ابدأ الكتابة لترى مكوناتك.", scoreAll:"المكونات الأربعة موجودة. طلب رائع!", scoreSome:"{n} من 4 مكونات.",
+ scoreLow:"جرّب أن تضيف لمن الطلب، أو الطول الذي تريده.", scoreAlmost:"اقتربت.",
+ coach:"احصل على نصائح من Claude", run:"أرسل إلى Claude",
+ noSample:"نصيحة: افتح هذا التطبيق داخل Claude لتحصل على نصائح وإجابات مباشرة. مربعات المكونات تعمل في أي مكان.",
+ thinking:"يفكر...", typeFirst:"اكتب طلبًا أولًا، ثم حاول مرة أخرى.",
+ unavail:"إجابات Claude المباشرة غير متاحة هنا، لكن مربعات المكونات ما زالت تفحص طلبك.",
+ errDenied:"لم يُسمح لـ Claude في هذه الصفحة. يمكنك التدرّب رغم ذلك: مربعات المكونات تعمل بدونه.",
+ errRate:"هناك طلبات كثيرة في وقت واحد. انتظر دقيقة ثم حاول مرة أخرى.", errGen:"لم يتمكن Claude من الرد الآن. تحقق من اتصالك وحاول مرة أخرى.",
+ cWorked:"ما الذي نجح", cTry:"شيء تجرّبه", cBetter:"نسخة أقوى", cUse:"استخدم هذه النسخة",
+ fTitle:"اعثر على أداة الذكاء الاصطناعي المناسبة", fLede:"أجب عن ثلاثة أسئلة سريعة واحصل على أفضل 3 أدوات لك.",
+ fQ1:"ماذا تريد أن تفعل؟", fQ2:"من أنت؟", fQ3:"على أي جهاز ستستخدمها؟", fShow:"اعرض أدواتي", fResult:"أفضل 3 أدوات لك",
+ g_write:"كتابة النصوص أو تصحيحها", g_study:"الدراسة أو البحث", g_images:"صنع الصور أو الملصقات", g_video:"صنع الفيديو أو تعديله", g_slides:"إعداد عرض تقديمي",
+ g_meetings:"تدوين ملاحظات الاجتماعات أو الحصص", g_build:"بناء تطبيق أو كتابة برمجة", g_language:"الترجمة أو تعلّم لغة", g_voice:"الصوت أو الموسيقى", g_automate:"أتمتة العمل أو تحليل البيانات",
+ w_student:"طالب", w_job:"أبحث عن عمل", w_business:"صاحب متجر أو عمل", w_teacher:"معلّم", w_any:"مجرد فضول",
+ d_phone:"الهاتف", d_computer:"الكمبيوتر", d_both:"كلاهما",
+ detailsEn:"تفاصيل الأدوات بالإنجليزية حاليًا.", pageEn:"هذه الصفحة بالإنجليزية حاليًا.",
+ tTitle:"قوالب طلبات جاهزة", tLede:"انسخ قالبًا، واملأ ما بين [الأقواس]، والصقه في Claude. أو اضغط “تدرّب عليه” لتجربته هنا. يمكنك أيضًا الكتابة بالعربية.",
+ copy:"نسخ", copied:"تم النسخ", practice:"تدرّب عليه",
+ p_students:"الطلاب", p_job:"الباحثون عن عمل", p_business:"أصحاب المتاجر", p_teachers:"المعلّمون", p_everyday:"الحياة اليومية", p_all:"الكل",
+ toolsTitle:"دليل أدوات الذكاء الاصطناعي", toolsLede:"66 أداة ذكاء اصطناعي شائعة تعمل جيدًا، من مساعدي المحادثة إلى الفيديو والموسيقى والبرمجة. لكل أداة: فيمَ تُستخدم، وأين تجدها، وكيف تبدأ.",
+ searchLabel:"ابحث عن الأدوات", searchPh:"ابحث عن الأدوات، مثل “video” أو “translate”",
+ checked:"آخر مراجعة لتفاصيل الأدوات: {d}", allCount:"الكل ({n})", showing:"عرض {n} أداة", showingOne:"عرض أداة واحدة",
+ noMatch:"لا توجد نتائج. جرّب كلمة أخرى، مثل “video” أو “notes” أو “translate”.",
+ useFor:"تُستخدم لـ:", where:"أين:", howStart:"كيف تبدأ", videos:"فيديوهات ودورات", open:"افتح {n}",
+ latest:"أحدث الدروس", founder:"لقاءات المؤسس", team:"استمع إلى الفريق", courses:"دورات كاملة", newest:"الأحدث أولًا", byDevs:"من المطوّرين",
+ report:"أبلغ عن مشكلة", reported:"شكرًا، تم الإبلاغ.",
+ certTitle:"شهادتك من AskWell", certLocked:"أكمل الدروس السبعة لتحصل على شهادتك. أكملت {d} من 7.",
+ certReady:"أحسنت! اكتب اسمك كما تريده أن يظهر على الشهادة.", yourName:"اسمك",
+ makeCert:"أنشئ شهادتي", download:"نزّل الشهادة", nameNeeded:"اكتب اسمك أولًا.", saved:"تم الحفظ على جهازك.",
+ saveHint:"لحفظها، اضغط مطولًا على الصورة (الهاتف) أو انقر بالزر الأيمن (الكمبيوتر).",
+ certNote:"هذه شهادة إتمام من AskWell، وليست شهادة مهنية معتمدة. للشهادات المهنية، راجع صفحة الشهادات.",
+ aTitle:"عن AskWell",
+ aWho:"أنشأت Ananya، طالبة السنة الأخيرة في B.Tech CSE (علم البيانات) في VJIT بحيدر آباد، موقع AskWell لمساعدة أي شخص، من أي عمر، على استخدام الذكاء الاصطناعي بثقة.",
+ aWhyH:"لماذا وُجد", aWhy:"معظم أدلة الذكاء الاصطناعي مكتوبة للتقنيين. يشرح AskWell الذكاء الاصطناعي بكلمات بسيطة، بخمس لغات، مع تدريب عملي.",
+ aPrivH:"خصوصيتك", aPriv:"يُحفظ تقدّمك والاسم على شهادتك في متصفحك فقط. عندما تضغط زر Claude، يُرسل النص الذي كتبته إلى Claude للحصول على إجابة. تُحفظ تقييمات الدروس وبلاغات المشاكل بدون اسمك.",
+ aAccH:"كيف نحافظ على دقته", aAcc:"تُراجع تفاصيل الأدوات وأسعار الدورات يدويًا، وتعرض كل صفحة تاريخ آخر مراجعة. إذا بدا شيء خاطئًا، اضغط “أبلغ عن مشكلة” على أي أداة.",
+ aGh:"شاهد الكود على GitHub",
+ langLabel:"اللغة", countryLabel:"البلد", countryOther:"بلد آخر", textSize:"حجم النص", skip:"انتقل إلى المحتوى الرئيسي", notHere:"غير متاح في بلدك",
+ notAff:"AskWell مشروع تعليمي مستقل. لم تصنعه Anthropic أو Claude أو أي أداة مذكورة هنا، وليس مرتبطًا بها رسميًا."
+};
+const LESSON_EXTRA=[
+{es:{title:"Conoce a Claude", sub:"Qué es un asistente de IA y qué no es",
+  body:`<p>Claude es un asistente de IA. Escribes un mensaje con palabras normales y te responde por escrito. Puede explicar cosas, ayudarte a escribir, planificar, resumir y generar ideas.</p><p>No es un buscador ni una persona. Aprendió de una enorme cantidad de texto, así que se le da bien el lenguaje, pero a veces puede equivocarse. Piensa en él como un ayudante inteligente cuyo trabajo sigues revisando.</p>`,
+  weak:"Hola", strong:"¡Hola! Soy nuevo en esto. ¿Cuáles son 3 formas sencillas en que podrías ayudarme en mi trabajo diario como dueño de una tienda?",
+  tip:"No hay que aprender ningún idioma especial. Escribe como hablarías.",
+  task:"Preséntate y pregúntale a Claude cómo podría ayudarte con algo de tu vida.",
+  quiz:[{q:"¿Cuál es la mejor forma de hablar con Claude?", o:["Usar comandos especiales de computadora","Escribir con normalidad, como si hablaras con una persona que te ayuda","Escribir solo palabras sueltas"]},
+        {q:"¿Puede equivocarse Claude?", o:["No, la IA siempre acierta","Sí, por eso hay que revisar las respuestas importantes"]}]},
+ ar:{title:"تعرّف على Claude", sub:"ما هو المساعد الذكي، وما الذي ليس هو",
+  body:`<p>Claude مساعد ذكاء اصطناعي. تكتب رسالة بكلمات عادية، فيرد عليك كتابةً. يمكنه شرح الأشياء، ومساعدتك في الكتابة، والتخطيط، والتلخيص، واقتراح الأفكار.</p><p>هو ليس محرك بحث وليس إنسانًا. تعلّم من كمية هائلة من النصوص، لذلك هو جيد في اللغة، لكنه قد يخطئ أحيانًا. اعتبره مساعدًا ذكيًا، لكن راجع عمله دائمًا.</p>`,
+  weak:"مرحبًا", strong:"مرحبًا! أنا جديد في هذا. ما هي 3 طرق بسيطة يمكنك أن تساعدني بها في عملي اليومي كصاحب متجر؟",
+  tip:"لا تحتاج إلى تعلّم لغة خاصة. اكتب كما تتكلم.",
+  task:"عرّف بنفسك واسأل Claude كيف يمكنه مساعدتك في أمر من حياتك.",
+  quiz:[{q:"ما أفضل طريقة للتحدث مع Claude؟", o:["استخدام أوامر كمبيوتر خاصة","الكتابة بشكل عادي، كأنك تتحدث مع شخص يساعدك","كتابة كلمات منفردة فقط"]},
+        {q:"هل يمكن أن يخطئ Claude؟", o:["لا، الذكاء الاصطناعي دائمًا على حق","نعم، لذلك راجع الإجابات المهمة"]}]}},
+{es:{title:"Los cuatro ingredientes", sub:"Qué, contexto, forma y tono",
+  body:`<p>La mayoría de las respuestas decepcionantes de la IA vienen de peticiones demasiado cortas. Una buena petición suele tener cuatro ingredientes:</p><p><b>Qué</b> quieres que haga. <b>Contexto</b>: para quién es o por qué lo necesitas. <b>Forma</b>: qué tan largo, y si quieres una lista, pasos o un párrafo. <b>Tono</b>: sencillo, amable, formal o divertido.</p><p>No siempre necesitas los cuatro, pero añadir aunque sea uno más marca una gran diferencia.</p>`,
+  weak:"Escribe sobre comida sana.", strong:"Escribe 5 consejos cortos sobre desayunos sanos y baratos para un estudiante universitario que solo tiene 10 minutos por la mañana. Que sea amable y sencillo.",
+  tip:"Vuelve a leer tu petición y pregúntate: ¿un desconocido entendería exactamente lo que quiero?",
+  task:"Escribe una petición que use los cuatro ingredientes. Intenta que se iluminen todos los cuadros.",
+  quiz:[{q:"¿Qué petición tiene los cuatro ingredientes?", o:["Escribe sobre comida.","Escribe 5 consejos cortos y amables sobre desayunos baratos para un estudiante universitario con poco tiempo.","Consejos de comida, por favor"]},
+        {q:"¿Qué significa “forma” en una petición?", o:["La longitud o el formato de la respuesta","El color del texto","El tamaño de la letra"]}]},
+ ar:{title:"المكونات الأربعة", sub:"ماذا، الخلفية، الشكل، الأسلوب",
+  body:`<p>معظم إجابات الذكاء الاصطناعي المخيّبة سببها طلبات قصيرة جدًا. الطلب الجيد يحتوي عادةً على أربعة مكونات:</p><p><b>ماذا</b> تريد أن يُنجز. <b>الخلفية</b>: لمن هو أو لماذا تحتاجه. <b>الشكل</b>: كم طوله، وهل تريده قائمة أو خطوات أو فقرة. <b>الأسلوب</b>: بسيط، ودود، رسمي، أو مرح.</p><p>لا تحتاج إلى الأربعة دائمًا، لكن إضافة مكوّن واحد فقط تصنع فرقًا كبيرًا.</p>`,
+  weak:"اكتب عن الطعام الصحي.", strong:"اكتب 5 نصائح قصيرة عن وجبات فطور صحية ورخيصة لطالب جامعي لديه 10 دقائق فقط في الصباح. اجعلها ودودة وبسيطة.",
+  tip:"اقرأ طلبك مرة أخرى واسأل نفسك: هل سيفهم شخص غريب ما أريده بالضبط؟",
+  task:"اكتب طلبًا يستخدم المكونات الأربعة. حاول أن تضيء كل المربعات.",
+  quiz:[{q:"أي طلب يحتوي على المكونات الأربعة؟", o:["اكتب عن الطعام.","اكتب 5 نصائح قصيرة وودودة عن فطور رخيص لطالب جامعي مشغول.","نصائح طعام من فضلك"]},
+        {q:"ماذا يعني “الشكل” في الطلب؟", o:["طول الإجابة أو تنسيقها","لون النص","حجم الخط"]}]}},
+{es:{title:"Dale algo con qué trabajar", sub:"Pega un texto y pide a Claude que lo use",
+  body:`<p>Claude funciona mucho mejor cuando le das el material real. Pega un mensaje, tus apuntes o un artículo y luego dile qué hacer con él.</p><p>Buenos usos: resumir un mensaje largo, convertir apuntes en una lista ordenada, explicar con palabras sencillas una carta confusa o corregir la gramática.</p>`,
+  weak:"Resume mis apuntes.", strong:"Estos son mis apuntes de clase: [pega los apuntes]. Resúmelos en 5 puntos clave para repasar antes de mi examen de mañana.",
+  tip:"Nunca pegues contraseñas, datos bancarios ni números de identificación de nadie.",
+  task:"Escribe una petición que incluya un texto corto (2–3 frases) y pida a Claude que haga algo con él.",
+  quiz:[{q:"¿Qué NUNCA debes pegar en un chat de IA?", o:["Tus apuntes de clase","Un artículo de noticias","Tu PIN del banco o tus contraseñas"]},
+        {q:"¿Qué ayuda a Claude a resumir bien tus apuntes?", o:["Pegar los apuntes y decir lo que necesitas","Escribir solo “resume”"]}]},
+ ar:{title:"أعطه شيئًا يعمل عليه", sub:"الصق نصًا واطلب من Claude استخدامه",
+  body:`<p>يعمل Claude بشكل أفضل بكثير عندما تعطيه المادة الحقيقية. الصق رسالة أو ملاحظات أو مقالًا، ثم قل له ماذا يفعل بها.</p><p>استخدامات جيدة: تلخيص رسالة طويلة، تحويل الملاحظات إلى قائمة مرتبة، شرح رسالة مربكة بكلمات بسيطة، أو تصحيح القواعد.</p>`,
+  weak:"لخّص ملاحظاتي.", strong:"هذه ملاحظات الحصة: [الصق الملاحظات]. لخّصها في 5 نقاط رئيسية أراجعها قبل امتحاني غدًا.",
+  tip:"لا تلصق أبدًا كلمات المرور أو بيانات البنك أو أرقام الهوية الخاصة بأي شخص.",
+  task:"اكتب طلبًا يتضمن نصًا قصيرًا (2–3 جمل) واطلب من Claude أن يفعل شيئًا به.",
+  quiz:[{q:"ما الذي يجب ألا تلصقه أبدًا في محادثة ذكاء اصطناعي؟", o:["ملاحظات الحصة","مقال إخباري","الرقم السري للبنك أو كلمات المرور"]},
+        {q:"ما الذي يساعد Claude على تلخيص ملاحظاتك جيدًا؟", o:["لصق الملاحظات وقول ما تحتاجه","كتابة “لخّص” فقط"]}]}},
+{es:{title:"Sigue la conversación", sub:"Mejora la respuesta con nuevos mensajes",
+  body:`<p>La primera respuesta no tiene que ser perfecta. Responde como lo harías con una persona: “hazlo más corto”, “usa palabras más sencillas” o “dame otra opción”.</p><p>Cada nuevo mensaje parte de lo que ya tienes, así que te acercas a lo que quieres sin empezar de cero.</p>`,
+  weak:"No, eso está mal.", strong:"Casi, pero hazlo la mitad de largo y quita las palabras técnicas.",
+  tip:"Di qué cambiar y cómo. “Más corto” está bien. “Más corto y con un ejemplo” está mejor.",
+  task:"Escribe el mensaje que enviarías después de una respuesta demasiado larga y complicada.",
+  quiz:[{q:"La respuesta es demasiado larga. ¿Cuál es la mejor respuesta?", o:["Empezar un chat nuevo","Por favor, hazlo la mitad de largo y más sencillo","Eso está mal"]},
+        {q:"¿Tiene que salir perfecto a la primera?", o:["Sí","No, puedes mejorarlo con nuevos mensajes"]}]},
+ ar:{title:"واصل المحادثة", sub:"حسّن الإجابة برسائل متابعة",
+  body:`<p>لا يجب أن تكون الإجابة الأولى مثالية. ردّ كما تردّ على شخص: “اجعلها أقصر”، “استخدم كلمات أبسط”، أو “أعطني خيارًا آخر”.</p><p>كل رسالة متابعة تبني على ما لديك، فتقترب مما تريد دون أن تبدأ من جديد.</p>`,
+  weak:"لا، هذا خطأ.", strong:"قريب، لكن من فضلك اجعله بنصف الطول واحذف الكلمات التقنية.",
+  tip:"قل ما الذي تريد تغييره وكيف. “أقصر” جيد. “أقصر، مع مثال واحد” أفضل.",
+  task:"اكتب رسالة متابعة قد ترسلها بعد إجابة طويلة جدًا ومعقدة.",
+  quiz:[{q:"الإجابة طويلة جدًا. ما أفضل رد؟", o:["ابدأ محادثة جديدة تمامًا","من فضلك اجعلها بنصف الطول وأبسط","هذا خطأ"]},
+        {q:"هل يجب أن تكون مثالية من أول مرة؟", o:["نعم","لا، يمكنك تحسينها برسائل المتابعة"]}]}},
+{es:{title:"Revisa su trabajo", sub:"La IA puede sonar segura y aun así equivocarse",
+  body:`<p>La IA puede cometer errores, confundir datos o inventar detalles que parecen reales. Esto importa sobre todo en salud, dinero, temas legales, fechas y cifras.</p><p>Hábitos útiles: pregúntale a Claude qué tan seguro está, pídele que te diga qué deberías comprobar y confirma los datos importantes con una fuente fiable o un experto de verdad.</p>`,
+  weak:"Dime la dosis correcta del medicamento.", strong:"Explícame con palabras sencillas qué preguntas debo hacerle a mi médico sobre mi nueva receta.",
+  tip:"Usa la IA para entender y prepararte. Para las decisiones finales, consulta a expertos de verdad.",
+  task:"Pregúntale algo a Claude y, en el mismo mensaje, pídele que te diga qué partes deberías comprobar.",
+  quiz:[{q:"Para la dosis de un medicamento, ¿qué debes hacer?", o:["Confiar del todo en la respuesta de la IA","Preguntar a un médico o farmacéutico"]},
+        {q:"¿Cuál es un buen hábito?", o:["Preguntar a Claude qué partes comprobar","No comprobar nunca nada"]}]},
+ ar:{title:"راجع عمله", sub:"قد يبدو الذكاء الاصطناعي واثقًا ومع ذلك يخطئ",
+  body:`<p>قد يخطئ الذكاء الاصطناعي، أو يخلط بين الحقائق، أو يخترع تفاصيل تبدو حقيقية. هذا مهم جدًا في الصحة والمال والأمور القانونية والتواريخ والأرقام.</p><p>عادات مفيدة: اسأل Claude عن مدى تأكده، واطلب منه أن يوضح ما يجب أن تتحقق منه، وتأكد من المعلومات المهمة من مصدر موثوق أو خبير حقيقي.</p>`,
+  weak:"أخبرني بالجرعة الصحيحة للدواء.", strong:"اشرح لي بكلمات بسيطة ما الأسئلة التي يجب أن أطرحها على طبيبي عن وصفتي الجديدة.",
+  tip:"استخدم الذكاء الاصطناعي للفهم والاستعداد. واستشر الخبراء الحقيقيين في القرارات النهائية.",
+  task:"اسأل Claude عن شيء، واطلب منه في الرسالة نفسها أن يخبرك بالأجزاء التي يجب أن تتحقق منها.",
+  quiz:[{q:"بالنسبة لجرعة دواء، ماذا يجب أن تفعل؟", o:["الثقة الكاملة بإجابة الذكاء الاصطناعي","سؤال طبيب أو صيدلي"]},
+        {q:"ما العادة الجيدة؟", o:["سؤال Claude عن الأجزاء التي يجب التحقق منها","عدم التحقق من أي شيء أبدًا"]}]}},
+{es:{title:"Pequeños logros diarios", sub:"Correos, planes, explicaciones e ideas",
+  body:`<p>Ahora júntalo todo. Usos diarios populares: redactar un correo amable, hacer un plan semanal de estudio o de comidas, explicarle un tema a un niño, preparar una entrevista y buscar nombres o ideas.</p><p>Empieza con una tarea pequeña que de verdad tengas esta semana. Es la forma más rápida de que la IA te resulte útil.</p>`,
+  weak:"Escribe un correo.", strong:"Escribe un correo corto y amable a mi casero pidiéndole que arregle esta semana un grifo que gotea. Vivo de alquiler en el piso 3B. Que sea cordial pero claro.",
+  tip:"Guarda las peticiones que funcionaron bien para reutilizarlas. En la página de Plantillas hay muchas listas para usar.",
+  task:"Escribe una petición para una tarea real que tengas esta semana, usando todo lo que aprendiste.",
+  quiz:[{q:"¿Cuál es la forma más rápida de que la IA te sea útil?", o:["Probarla con una tarea real de esta semana","Leer sobre IA durante meses primero"]},
+        {q:"¿Qué haces con las peticiones que funcionaron bien?", o:["Guardarlas para reutilizarlas","Borrarlas"]}]},
+ ar:{title:"إنجازات يومية", sub:"رسائل، خطط، شروحات وأفكار",
+  body:`<p>الآن اجمع كل شيء معًا. من الاستخدامات اليومية الشائعة: كتابة رسالة بريد مهذبة، إعداد خطة أسبوعية للدراسة أو الوجبات، شرح موضوع لطفل، الاستعداد لمقابلة عمل، واقتراح أسماء أو أفكار.</p><p>ابدأ بمهمة صغيرة لديك فعلًا هذا الأسبوع. هذه أسرع طريقة لتجعل الذكاء الاصطناعي مفيدًا لك.</p>`,
+  weak:"اكتب رسالة بريد.", strong:"اكتب رسالة قصيرة ومهذبة إلى المالك أطلب فيها إصلاح صنبور يسرّب الماء هذا الأسبوع. أنا مستأجر في الشقة 3B. اجعلها ودودة لكن واضحة.",
+  tip:"احفظ الطلبات التي نجحت لتستخدمها لاحقًا. في صفحة القوالب طلبات كثيرة جاهزة.",
+  task:"اكتب طلبًا لمهمة حقيقية لديك هذا الأسبوع، مستخدمًا كل ما تعلمته.",
+  quiz:[{q:"ما أسرع طريقة لتجعل الذكاء الاصطناعي مفيدًا لك؟", o:["تجربته على مهمة حقيقية هذا الأسبوع","القراءة عنه لأشهر أولًا"]},
+        {q:"ماذا تفعل بالطلبات التي نجحت؟", o:["أحفظها لأستخدمها لاحقًا","أحذفها"]}]}},
+{es:{title:"Mantente seguro con la IA", sub:"Detecta estafas, voces falsas y ofertas falsas", wl:"Señal de estafa", sl:"Hábito seguro",
+  body:`<p>Los delincuentes también usan la IA. Pueden copiar la voz de un familiar a partir de un video corto, crear videos falsos de famosos y escribir mensajes muy convincentes.</p><p>Reglas sencillas: si una llamada o un mensaje te pide dinero o un código de verificación con urgencia, detente. Cuelga y vuelve a llamar a esa persona al número que ya tienes guardado. Ningún banco, policía o empresa de verdad te pedirá tu código o tu PIN. Ten mucho cuidado con las apps de “trading con IA” o de inversión que prometen ganancias seguras.</p>`,
+  weak:"Mamá, estoy en problemas. Envía {money} a este número ahora mismo y no se lo digas a nadie.", strong:"Cuelga y, antes de hacer nada, llama a tu hijo al número que tienes guardado en el teléfono.",
+  tip:"Acuerden una palabra clave familiar que solo ustedes conozcan, para comprobar que de verdad es esa persona.",
+  task:"Pide a Claude 5 señales de alerta de una llamada o mensaje falso, con palabras sencillas para tus padres.",
+  quiz:[{q:"Alguien llama con la voz de un familiar y te pide dinero con urgencia. ¿Qué haces?", o:["Envío el dinero rápido","Cuelgo y le llamo a su número guardado"]},
+        {q:"¿Quién te pedirá tu código de verificación?", o:["Tu banco","La policía","Ninguna organización de verdad"]}]},
+ ar:{title:"ابقَ آمنًا مع الذكاء الاصطناعي", sub:"اكتشف الاحتيال والأصوات المزيفة والعروض الكاذبة", wl:"علامة احتيال", sl:"عادة آمنة",
+  body:`<p>المحتالون يستخدمون الذكاء الاصطناعي أيضًا. يمكنهم تقليد صوت أحد أفراد عائلتك من فيديو قصير، وصنع فيديوهات مزيفة لمشاهير، وكتابة رسائل مقنعة جدًا.</p><p>قواعد بسيطة: إذا طلبت منك مكالمة أو رسالة مالًا أو رمز تحقق بشكل عاجل، توقّف. أغلق الخط واتصل بالشخص على الرقم الموجود لديك مسبقًا. لن يطلب منك أي بنك أو شرطي أو شركة حقيقية رمز التحقق أو الرقم السري. احذر جدًا من تطبيقات “التداول بالذكاء الاصطناعي” أو الاستثمار التي تعد بأرباح مضمونة.</p>`,
+  weak:"أمي، أنا في ورطة. أرسلي {money} إلى هذا الرقم الآن ولا تخبري أحدًا.", strong:"أغلق الخط، ثم اتصل بابنك على الرقم المحفوظ في هاتفك قبل أن تفعل أي شيء.",
+  tip:"اتفقوا على كلمة سر عائلية لا يعرفها غيركم، لتتأكدوا أنه الشخص نفسه حقًا.",
+  task:"اطلب من Claude 5 علامات تحذيرية للمكالمات أو الرسائل المزيفة، بكلمات بسيطة لوالديك.",
+  quiz:[{q:"شخص يتصل بصوت أحد أقاربك ويطلب مالًا بشكل عاجل. ماذا تفعل؟", o:["أرسل المال بسرعة","أغلق الخط وأتصل به على رقمه المحفوظ"]},
+        {q:"من سيطلب منك رمز التحقق؟", o:["البنك","الشرطة","لا توجد جهة حقيقية تطلبه"]}]}}
+];
+LESSON_EXTRA.forEach((x,i)=>Object.assign(LESSONS[i],x));
+const LANGS=[["en","English"],["hi","हिन्दी"],["te","తెలుగు"],["es","Español"],["ar","العربية"]];
+const RTL=["ar"];
+const REGIONS={IN:{money:"₹20,000",cuisine:"Indian "},US:{money:"$500",cuisine:""},GB:{money:"£400",cuisine:""},AE:{money:"AED 2,000",cuisine:""},SA:{money:"SAR 2,000",cuisine:""},MX:{money:"MX$10,000",cuisine:"Mexican "},ES:{money:"500 €",cuisine:"Spanish "},OT:{money:"$500",cuisine:""}};
+function guessRegion(){ try{ const tz=Intl.DateTimeFormat().resolvedOptions().timeZone||""; if(/Kolkata|Calcutta/.test(tz)) return "IN"; if(/Dubai/.test(tz)) return "AE"; if(/Riyadh/.test(tz)) return "SA"; if(/Mexico_City|Monterrey|Tijuana|Cancun|Merida/.test(tz)) return "MX"; if(/Madrid/.test(tz)) return "ES"; if(/London/.test(tz)) return "GB"; if(/^America\//.test(tz)) return "US"; }catch(e){} return "OT"; }
+
+const RX2={
+  task:/escrib|explic|haz |hazlo|crea|resum|lista|planific|ayúda|ayuda|dame|sugier|traduc|enseñ|dime|describ|corrig|mejor|اكتب|اشرح|اصنع|أنشئ|لخ|خطط|ساعد|اقترح|ترجم|علم|أخبرني|صف|صحح|حسن/i,
+  context:/\b(soy|mi|mis|para (mi|un|una|el|la)|porque|estudiante)\b|أنا|من أجل|لأن|طالب|لابني|لطالب/i,
+  format:/\d+\s*(puntos|consejos|pasos|ideas|líneas|frases|ejemplos)|\b(lista|tabla|corto|breve|resumen)\b|[0-9٠-٩]+\s*(نقاط|نصائح|خطوات)|قائمة|جدول|قصير|مختصر|ملخص/i,
+  tone:/sencill|simple|amable|formal|divertid|claro|educad|fácil|بسيط|سهل|ودود|رسمي|ممتع|واضح|مهذب|مرح/i
+};
+
+const ACCT={
+en:{account:"Log in / Sign up", myCerts:"My certifications", noCerts:"You haven’t earned any certifications yet.", completeCourses:"Complete the certification courses here", earnAskwell:"Finish the 7 lessons to earn your AskWell certificate", askwellCert:"AskWell certificate", viewCert:"View", earnedThis:"I’ve earned this", earnedYes:"Earned ✓", accTitle:"Your account", claudeTitle:"Sign in with your Claude account", claudeOn:"You’re signed in as {n}.", claudeOnNoName:"You’re signed in with your Claude account.", claudeSync:"Your progress and certifications are saved to your account, so they follow you to any device.", claudeLocal:"Your progress is saved on this device.", claudeOff:"Open AskWell inside Claude to sign in with your Claude account.", signupTitle:"Create your learner profile", signupSub:"Sign up in seconds. Your profile is saved on this device.", create:"Create my profile", profileTitle:"Your profile", hello:"Hello, {n}!", edit:"Save changes", logout:"Log out on this device", logoutConfirm:"Tap again to log out", loggedOut:"You’ve logged out on this device.", created:"Profile created. Welcome!", savedP:"Changes saved.", localNote:"This profile stays on this device only.", chooseLang:"Choose your language"},
+hi:{account:"लॉग इन / साइन अप", myCerts:"मेरे सर्टिफ़िकेट", noCerts:"आपने अभी तक कोई सर्टिफ़िकेट नहीं पाया है।", completeCourses:"सर्टिफ़िकेट कोर्स यहाँ पूरे करें", earnAskwell:"AskWell सर्टिफ़िकेट पाने के लिए 7 पाठ पूरे करें", askwellCert:"AskWell सर्टिफ़िकेट", viewCert:"देखें", earnedThis:"मैंने यह पा लिया है", earnedYes:"मिल गया ✓", accTitle:"आपका अकाउंट", claudeTitle:"अपने Claude अकाउंट से साइन इन करें", claudeOn:"आप {n} के रूप में साइन इन हैं।", claudeOnNoName:"आप अपने Claude अकाउंट से साइन इन हैं।", claudeSync:"आपकी प्रगति और सर्टिफ़िकेट आपके अकाउंट में सेव होते हैं, इसलिए हर डिवाइस पर साथ रहते हैं।", claudeLocal:"आपकी प्रगति इस डिवाइस पर सेव होती है।", claudeOff:"अपने Claude अकाउंट से साइन इन करने के लिए AskWell को Claude के अंदर खोलें।", signupTitle:"अपनी लर्नर प्रोफ़ाइल बनाएँ", signupSub:"कुछ ही सेकंड में साइन अप करें। आपकी प्रोफ़ाइल इस डिवाइस पर सेव होती है।", create:"मेरी प्रोफ़ाइल बनाएँ", profileTitle:"आपकी प्रोफ़ाइल", hello:"नमस्ते, {n}!", edit:"बदलाव सेव करें", logout:"इस डिवाइस से लॉग आउट करें", logoutConfirm:"लॉग आउट के लिए फिर से दबाएँ", loggedOut:"आप इस डिवाइस से लॉग आउट हो गए।", created:"प्रोफ़ाइल बन गई। स्वागत है!", savedP:"बदलाव सेव हो गए।", localNote:"यह प्रोफ़ाइल सिर्फ़ इसी डिवाइस पर रहती है।", chooseLang:"अपनी भाषा चुनें"},
+te:{account:"లాగిన్ / సైన్ అప్", myCerts:"నా సర్టిఫికెట్లు", noCerts:"మీరు ఇంకా ఏ సర్టిఫికెట్ పొందలేదు.", completeCourses:"సర్టిఫికెట్ కోర్సులు ఇక్కడ పూర్తి చేయండి", earnAskwell:"AskWell సర్టిఫికెట్ పొందడానికి 7 పాఠాలు పూర్తి చేయండి", askwellCert:"AskWell సర్టిఫికెట్", viewCert:"చూడండి", earnedThis:"నేను దీన్ని పొందాను", earnedYes:"పొందారు ✓", accTitle:"మీ అకౌంట్", claudeTitle:"మీ Claude అకౌంట్‌తో సైన్ ఇన్ అవ్వండి", claudeOn:"మీరు {n}గా సైన్ ఇన్ అయ్యారు.", claudeOnNoName:"మీరు మీ Claude అకౌంట్‌తో సైన్ ఇన్ అయ్యారు.", claudeSync:"మీ పురోగతి, సర్టిఫికెట్లు మీ అకౌంట్‌లో సేవ్ అవుతాయి, కాబట్టి ఏ డివైస్‌లోనైనా మీతో ఉంటాయి.", claudeLocal:"మీ పురోగతి ఈ డివైస్‌లో సేవ్ అవుతుంది.", claudeOff:"మీ Claude అకౌంట్‌తో సైన్ ఇన్ అవ్వడానికి AskWellను Claude లోపల తెరవండి.", signupTitle:"మీ లెర్నర్ ప్రొఫైల్ సృష్టించండి", signupSub:"కొన్ని సెకన్లలో సైన్ అప్ అవ్వండి. మీ ప్రొఫైల్ ఈ డివైస్‌లో సేవ్ అవుతుంది.", create:"నా ప్రొఫైల్ సృష్టించు", profileTitle:"మీ ప్రొఫైల్", hello:"నమస్తే, {n}!", edit:"మార్పులు సేవ్ చేయండి", logout:"ఈ డివైస్‌లో లాగ్ అవుట్ అవ్వండి", logoutConfirm:"లాగ్ అవుట్ కోసం మళ్లీ నొక్కండి", loggedOut:"మీరు ఈ డివైస్‌లో లాగ్ అవుట్ అయ్యారు.", created:"ప్రొఫైల్ సృష్టించబడింది. స్వాగతం!", savedP:"మార్పులు సేవ్ అయ్యాయి.", localNote:"ఈ ప్రొఫైల్ ఈ డివైస్‌లో మాత్రమే ఉంటుంది.", chooseLang:"మీ భాషను ఎంచుకోండి"},
+es:{account:"Iniciar sesión / Registrarse", myCerts:"Mis certificaciones", noCerts:"Todavía no has obtenido ninguna certificación.", completeCourses:"Completa aquí los cursos de certificación", earnAskwell:"Termina las 7 lecciones para obtener tu certificado de AskWell", askwellCert:"Certificado de AskWell", viewCert:"Ver", earnedThis:"Ya lo obtuve", earnedYes:"Obtenido ✓", accTitle:"Tu cuenta", claudeTitle:"Inicia sesión con tu cuenta de Claude", claudeOn:"Has iniciado sesión como {n}.", claudeOnNoName:"Has iniciado sesión con tu cuenta de Claude.", claudeSync:"Tu progreso y tus certificaciones se guardan en tu cuenta, así que te siguen a cualquier dispositivo.", claudeLocal:"Tu progreso se guarda en este dispositivo.", claudeOff:"Abre AskWell dentro de Claude para iniciar sesión con tu cuenta de Claude.", signupTitle:"Crea tu perfil de estudiante", signupSub:"Regístrate en segundos. Tu perfil se guarda en este dispositivo.", create:"Crear mi perfil", profileTitle:"Tu perfil", hello:"¡Hola, {n}!", edit:"Guardar cambios", logout:"Cerrar sesión en este dispositivo", logoutConfirm:"Pulsa otra vez para cerrar sesión", loggedOut:"Cerraste sesión en este dispositivo.", created:"Perfil creado. ¡Bienvenido!", savedP:"Cambios guardados.", localNote:"Este perfil solo se guarda en este dispositivo.", chooseLang:"Elige tu idioma"},
+ar:{account:"تسجيل الدخول / إنشاء حساب", myCerts:"شهاداتي", noCerts:"لم تحصل على أي شهادة بعد.", completeCourses:"أكمل دورات الشهادات من هنا", earnAskwell:"أنهِ الدروس السبعة لتحصل على شهادة AskWell", askwellCert:"شهادة AskWell", viewCert:"عرض", earnedThis:"حصلت عليها", earnedYes:"تم الحصول عليها ✓", accTitle:"حسابك", claudeTitle:"سجّل الدخول بحساب Claude", claudeOn:"أنت مسجّل الدخول باسم {n}.", claudeOnNoName:"أنت مسجّل الدخول بحساب Claude.", claudeSync:"يُحفظ تقدّمك وشهاداتك في حسابك، فترافقك على أي جهاز.", claudeLocal:"يُحفظ تقدّمك على هذا الجهاز.", claudeOff:"افتح AskWell داخل Claude لتسجيل الدخول بحساب Claude.", signupTitle:"أنشئ ملفك التعليمي", signupSub:"أنشئ حسابك في ثوانٍ. يُحفظ ملفك على هذا الجهاز.", create:"أنشئ ملفي", profileTitle:"ملفك", hello:"مرحبًا، {n}!", edit:"احفظ التغييرات", logout:"تسجيل الخروج من هذا الجهاز", logoutConfirm:"اضغط مرة أخرى لتسجيل الخروج", loggedOut:"سجّلت الخروج من هذا الجهاز.", created:"تم إنشاء الملف. أهلًا بك!", savedP:"تم حفظ التغييرات.", localNote:"يبقى هذا الملف على هذا الجهاز فقط.", chooseLang:"اختر لغتك"}
+};
+Object.keys(ACCT).forEach(l=>Object.assign(STR[l],ACCT[l]));
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const el = (tag, cls, text) => { const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; };
+const store = { get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}} };
+const use = n => (window.claude && typeof window.claude.use==="function") ? window.claude.use(n).catch(()=>null) : Promise.resolve(null);
+const sampleP=use("sample"), dbP=use("db"), userP=use("user"), dlP=use("downloads");
+const yt = (q, newest) => "https://www.youtube.com/results?search_query=" + encodeURIComponent(q) + (newest ? "&sp=CAI%253D" : "");
+const N = LESSONS.length;
+
+let lang = LANGS.some(l=>l[0]===store.get("askwell-lang")) ? store.get("askwell-lang") : "en";
+let region = REGIONS[store.get("askwell-region")] ? store.get("askwell-region") : guessRegion();
+let textSize = ["0","1","2"].includes(store.get("askwell-size")) ? +store.get("askwell-size") : 0;
+const fill = s => String(s).split("{money}").join(REGIONS[region].money).split("{cuisine}").join(REGIONS[region].cuisine);
+const SMOOTH = () => (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) ? "auto" : "smooth";
+function t(k, vars){ let s = (STR[lang] && STR[lang][k] != null) ? STR[lang][k] : (STR.en[k] != null ? STR.en[k] : k); if(vars) for(const v in vars) s = s.split("{"+v+"}").join(vars[v]); return s; }
+const LANG_NAME = {en:"English", hi:"Hindi", te:"Telugu", es:"Spanish", ar:"Arabic"};
+const VOICE = {en:"en", hi:"hi", te:"te", es:"es", ar:"ar"};
+const langTag = () => ({en: region==="US"?"en-US":region==="GB"?"en-GB":"en-IN", hi:"hi-IN", te:"te-IN", es: region==="ES"?"es-ES":"es-MX", ar: region==="AE"?"ar-AE":"ar-SA"})[lang];
+
+let done = (()=>{ try{ const d=JSON.parse(store.get("askwell-progress-v1")); return Array.isArray(d)?d.filter(i=>i>=0&&i<N):[] }catch(e){ return [] } })();
+const saveDone = () => store.set("askwell-progress-v1", JSON.stringify(done));
+
+/* ---------- anonymous feedback (only where this viewer may write) ---------- */
+let logDb = null;
+const logReady = (async()=>{ const db=await dbP; if(!db) return null; const u=await userP; const c = u && typeof u.can==="function" ? u.can("data.write") : null; if(c===false) return null; logDb=db; return db; })();
+async function logEvent(type, data={}){ const db=await logReady; if(!db) return false; try{ await db.collection("events").add({type, ...data, lang, at:new Date().toISOString()}); return true; }catch(e){ logDb=null; return false; } }
+
+/* ---------- static text ---------- */
+function applyStatic(){
+  document.documentElement.lang = lang;
+  document.documentElement.dir = RTL.includes(lang) ? "rtl" : "ltr";
+  document.documentElement.style.fontSize = ["100%","115%","130%"][textSize];
+  const rs=$("#regionSel"); rs.innerHTML=""; let dn=null; try{ dn=new Intl.DisplayNames([lang],{type:"region"}); }catch(e){}
+  Object.keys(REGIONS).forEach(c=>{ const o=el("option",null, c==="OT" ? t("countryOther") : (dn ? dn.of(c) : c)); o.value=c; rs.appendChild(o); }); rs.value=region; rs.setAttribute("aria-label",t("countryLabel"));
+  const sg=$("#sizeGroup"); sg.setAttribute("aria-label",t("textSize")); sg.querySelectorAll("button").forEach(b=>{ b.setAttribute("aria-pressed",String(+b.dataset.size===textSize)); b.setAttribute("aria-label",t("textSize")+" "+b.textContent); });
+  document.querySelectorAll("[data-i18n]").forEach(n=>{ const v=t(n.dataset.i18n); n.textContent=v; if(n.classList.contains("en-only")) n.hidden = !v; });
+  $("#toolSearch").placeholder = t("searchPh");
+}
+
+/* ---------- ingredient check ---------- */
+const RX = {
+  task:/\b(write|explain|make|create|summari[sz]e|list|plan|help|give|suggest|draft|translate|teach|tell|describe|fix|rewrite|compare|prepare|brainstorm|turn|ask|show|find|check|improve|act)\b|लिख|समझा|बता|बना|सुझा|अनुवाद|सारांश|योजना|मदद|सुधार|रాయ|వివరించ|చెప్ప|తయారు|సూచ|అనువద|సారాంశ|ప్రణాళిక|సహాయ|మార్చ/i,
+  context:/\b(i am|i'm|i’m|my|for (a|an|my|the)|because|so that|who|beginner|student|new to|as a)\b|मैं|मेरा|मेरी|मेरे|के लिए|क्योंकि|छात्र|నేను|నా |కోసం|ఎందుకంటే|విద్యార్థ/i,
+  format:/\b(\d+|one|two|three|four|five|ten)\s+(points?|tips?|steps?|ideas?|lines?|sentences?|bullets?|words?|options?|questions?|examples?)\b|\b(list|bullet|table|steps|paragraph|short|brief|half as long|one page|email|outline|summary)\b|\d+\s*(बिंदु|पॉइंट|टिप्स|कदम|लाइन|वाक्य)|सूची|छोटा|छोटे|तालिका|\d+\s*(పాయింట్|చిట్కా|దశ|లైన్|వాక్య)|జాబితా|చిన్న|పట్టిక/i,
+  tone:/\b(simple|simpler|friendly|formal|casual|polite|fun|funny|kind|clear|professional|warm|easy|plain|gentle|like i'?m)\b|आसान|सरल|विनम्र|मज़ेदार|मजेदार|दोस्ताना|औपचारिक|సులభ|సరళ|మర్యాద|స్నేహ|సరదా|అధికారిక/i
+};
+const detect = s => ({task:RX.task.test(s)||RX2.task.test(s), context:(RX.context.test(s)||RX2.context.test(s))&&s.length>20, format:RX.format.test(s)||RX2.format.test(s), tone:RX.tone.test(s)||RX2.tone.test(s)});
+let sampleBlocked=false;
+function errCopy(e){ const c=e&&e.code; if(c==="not_granted"){sampleBlocked=true;return t("errDenied")} if(c==="rate_limited") return t("errRate"); return t("errGen"); }
+
+function makeKitchen(mount, opts={}){
+  mount.innerHTML="";
+  const k=el("div","kitchen"), id="k"+Math.random().toString(36).slice(2,8);
+  const label=el("label",null,opts.label||t("kLabel")); label.htmlFor=id;
+  const box=el("textarea"); box.id=id; box.placeholder=t("kPlaceholder");
+  const ings=el("div","ingredients");
+  [["task","ingWhat","ingWhatS"],["context","ingBg","ingBgS"],["format","ingShape","ingShapeS"],["tone","ingTone","ingToneS"]].forEach(([key,a,b])=>{ const d=el("div","ing"); d.dataset.ing=key; d.append(el("b",null,t(a)), el("small",null,t(b))); ings.appendChild(d); });
+  const score=el("p","score"); const row=el("div","row");
+  const coach=el("button","btn btn-primary",t("coach")), run=el("button","btn btn-soft",t("run"));
+  row.append(coach,run); const note=el("p","note"); const out=el("div","out"); out.hidden=true; out.setAttribute("aria-live","polite");
+  k.append(label,box,ings,score,row,note,out); mount.appendChild(k);
+  let prev={};
+  function update(){
+    const d=detect(box.value), n=Object.values(d).filter(Boolean).length;
+    ings.querySelectorAll(".ing").forEach(x=>{ const on=d[x.dataset.ing]; x.classList.toggle("on",on); if(on&&!prev[x.dataset.ing]){x.classList.add("pop");setTimeout(()=>x.classList.remove("pop"),250)} });
+    prev=d;
+    score.textContent = !box.value.trim() ? t("scoreEmpty") : n===4 ? t("scoreAll") : t("scoreSome",{n})+" "+(n<2?t("scoreLow"):t("scoreAlmost"));
+  }
+  box.addEventListener("input",update); update();
+  sampleP.then(s=>{ if(!s){coach.hidden=true;run.hidden=true;note.textContent=t("noSample")} });
+  async function guard(){
+    const s=await sampleP;
+    if(!s||sampleBlocked){out.hidden=false;out.textContent=t("unavail");return null}
+    if(!box.value.trim()){out.hidden=false;out.textContent=t("typeFirst");box.focus();return null}
+    return s;
+  }
+  coach.onclick=async()=>{
+    const s=await guard(); if(!s) return;
+    coach.disabled=run.disabled=true; out.hidden=false; out.textContent=t("thinking");
+    const prompt=`You are a kind, encouraging coach teaching a complete beginner how to write requests to an AI assistant.
+${opts.task?`Their practice task was: "${opts.task}"\n`:""}Their request: """${box.value.slice(0,2000)}"""
+Judge it on four ingredients: what (the task), background (who it's for or why), shape (length or format), tone.
+Reply ONLY with JSON, no other text: {"praise": one short sentence on what they did well, "tip": one short, specific suggestion in plain words, "better": an improved version of their request, under 60 words, keeping their idea}.
+Write praise and tip in very simple ${LANG_NAME[lang]} that a 12-year-old could follow. Write "better" in the same language the learner used.`;
+    try{
+      const r=await s.json(prompt,{modelTier:"quick"});
+      out.innerHTML="";
+      [["cWorked",r.praise],["cTry",r.tip],["cBetter",r.better]].forEach(([h,v])=>{ out.append(el("h3",null,t(h)), el("p",null,v||"")); });
+      if(r.better){ const b=el("button","btn btn-soft btn-small",t("cUse")); b.onclick=()=>{box.value=r.better;update();box.focus()}; out.appendChild(b); }
+    }catch(e){ out.textContent=errCopy(e) } finally{ coach.disabled=run.disabled=false }
+  };
+  run.onclick=async()=>{
+    const s=await guard(); if(!s) return;
+    coach.disabled=run.disabled=true; out.hidden=false; out.textContent=t("thinking");
+    try{ const {text}=await s(box.value.slice(0,4000)+"\n\n(Keep the answer under 200 words.)",{modelTier:"quick",cache:false,onText:({text})=>{out.textContent=text}}); out.textContent=text; }
+    catch(e){ out.textContent=(e&&e.text)?e.text:errCopy(e) } finally{ coach.disabled=run.disabled=false }
+  };
+  return { setText(v){ box.value=v; update(); box.focus({preventScroll:true}); k.scrollIntoView({behavior:SMOOTH(),block:"start"}); } };
+}
+
+/* ---------- progress + path ---------- */
+function renderMeter(){
+  if(typeof renderCertPop==="function"){ renderCertPop(); renderAccountBtn(); }
+  $("#homeCert").hidden = done.length<N;
+}
+function renderPath(){
+  const ol=$("#path"); ol.innerHTML="";
+  LESSONS.forEach((L,i)=>{
+    const f=L[lang]||L.en, isDone=done.includes(i);
+    const li=el("li"), a=el("a","step"+(isDone?" done":"")); a.href="#lesson-"+(i+1);
+    const mid=el("span"); mid.append(el("h3",null,f.title), el("p",null,f.sub));
+    a.append(el("span","num",isDone?"✓":String(i+1)), mid, el("span","mins",`${L.mins} ${t("min")}`));
+    li.appendChild(a); ol.appendChild(li);
+  });
+}
+
+/* ---------- lesson ---------- */
+let speaking=false;
+function stopSpeech(){ try{ speechSynthesis.cancel() }catch(e){} speaking=false; const b=$("#listenBtn"); if(b) b.textContent=t("listen"); }
+function renderLesson(i){
+  stopSpeech();
+  const L=LESSONS[i], f=L[lang]||L.en;
+  const body=$("#lessonBody"); body.innerHTML="";
+  body.appendChild(el("h1",null,`${i+1}. ${f.title}`));
+  const txt=el("div"); txt.innerHTML=f.body; body.appendChild(txt);
+  const cmp=el("div","compare");
+  const w=el("div","ex weak"); const [qo,qc] = lang==="ar" ? ["«","»"] : ["“","”"];
+  w.append(el("b",null,f.wl||t("weak")), el("span",null,qo+fill(f.weak)+qc));
+  const s=el("div","ex strong"); s.append(el("b",null,f.sl||t("strong")), el("span",null, L.plainStrong ? fill(f.strong) : qo+fill(f.strong)+qc));
+  cmp.append(w,s); body.appendChild(cmp);
+  const tip=el("div","tip"); tip.append(el("b",null,t("tip")+" "), document.createTextNode(f.tip)); body.appendChild(tip);
+
+  // listen
+  const lb=$("#listenBtn"), vn=$("#voiceNote"); vn.hidden=true;
+  lb.hidden = !("speechSynthesis" in window);
+  lb.textContent=t("listen");
+  lb.onclick=()=>{
+    if(speaking){ stopSpeech(); return; }
+    const u=new SpeechSynthesisUtterance([f.title, txt.textContent, f.tip].join(". "));
+    const code=VOICE[lang]; const voices=speechSynthesis.getVoices(); const v=voices.find(x=>x.lang&&x.lang.toLowerCase().startsWith(code));
+    if(v) u.voice=v; u.lang = langTag(); u.rate=.95;
+    if(!v && lang!=="en" && voices.length){ vn.textContent=t("noVoice"); vn.hidden=false; }
+    u.onend=u.onerror=()=>stopSpeech();
+    speaking=true; lb.textContent=t("stop"); speechSynthesis.speak(u);
+  };
+
+  const kw=$("#lessonKitchen"); kw.innerHTML="";
+  kw.appendChild(el("p","task",t("yourTurn")+f.task));
+  const km=el("div"); kw.appendChild(km); makeKitchen(km,{task:f.task});
+
+  // quiz
+  const qz=$("#quiz"); qz.innerHTML="";
+  qz.append(el("h2",null,t("quizTitle")), el("p","note",t("quizSub")));
+  f.quiz.forEach((q,qi)=>{
+    const fs=el("fieldset"); fs.append(el("legend",null,`${qi+1}. ${q.q}`));
+    q.o.forEach((o,oi)=>{ const lab=el("label"), r=el("input"); r.type="radio"; r.name=`q${i}-${qi}`; r.value=oi; lab.append(r, el("span",null,o)); fs.appendChild(lab); });
+    fs.addEventListener("change",()=>fs.classList.remove("wrong","right"));
+    qz.appendChild(fs);
+  });
+  const chk=el("button","btn btn-primary",t("check")); const msg=el("p","quiz-msg"); msg.setAttribute("aria-live","polite");
+  qz.append(chk,msg);
+  if(done.includes(i)){ msg.textContent=t("quizDone"); msg.className="quiz-msg ok"; }
+  chk.onclick=()=>{
+    const sets=[...qz.querySelectorAll("fieldset")];
+    const picks=sets.map(fs=>{ const c=fs.querySelector("input:checked"); return c?+c.value:null; });
+    if(picks.some(p=>p===null)){ msg.textContent=t("quizMissing"); msg.className="quiz-msg bad"; return; }
+    let ok=true;
+    sets.forEach((fs,qi)=>{ const right=picks[qi]===L.ans[qi]; fs.classList.toggle("right",right); fs.classList.toggle("wrong",!right); if(!right) ok=false; });
+    if(ok){
+      msg.textContent=t("quizPass"); msg.className="quiz-msg ok";
+      if(!done.includes(i)){ done.push(i); persist(); logEvent("lesson_done",{lesson:i+1}); }
+      renderMeter(); renderPath(); setNext(i);
+    } else { msg.textContent=t("quizRetry"); msg.className="quiz-msg bad"; const first=qz.querySelector("fieldset.wrong"); first&&first.scrollIntoView({behavior:SMOOTH(),block:"center"}); }
+  };
+
+  // rating
+  const rate=$("#rate"); rate.hidden=true;
+  [...rate.querySelectorAll("button")].forEach(b=>{ b.hidden=false; b.onclick=async()=>{ const ok=await logEvent("lesson_rating",{lesson:i+1, helpful:b.dataset.rate==="1"}); rate.querySelectorAll("button").forEach(x=>x.hidden=true); rate.querySelector("p").textContent= ok ? t("thanks") : t("helpful"); if(!ok) rate.hidden=true; }; });
+  rate.querySelector("p").textContent=t("helpful");
+  logReady.then(db=>{ rate.hidden=!db; });
+  setNext(i);
+}
+function setNext(i){
+  const next=$("#nextLink");
+  if(i<N-1){ next.href="#lesson-"+(i+2); next.textContent=t("next"); }
+  else if(done.length>=N){ next.href="#my-certificate"; next.textContent=t("getCert"); }
+  else { next.href="#home"; next.textContent=t("allLessons").replace("‹ ",""); }
+}
+
+/* ---------- tools ---------- */
+let toolFilter="All", toolQuery="";
+function toolCard(tl, why){
+  const d=el("article","tool");
+  d.appendChild(el("span","badge cat",tl.c));
+  d.appendChild(el("h3",null,tl.n));
+  if(why) d.appendChild(el("p","result-why",why));
+  const j=el("p","job"); j.append(el("b",null,t("useFor")+" "), document.createTextNode(tl.use)); d.appendChild(j);
+  const w=el("p","where"); w.append(el("b",null,t("where")+" "), document.createTextNode(tl.where)); d.appendChild(w);
+  if(tl.note) d.appendChild(el("p","warn",tl.note));
+  if(tl.notIn && tl.notIn.includes(region)) d.appendChild(el("p","warn",t("notHere")));
+  if(tl.who) d.appendChild(el("p","who",tl.who));
+  const h=el("details"); h.appendChild(el("summary",null,t("howStart"))); const ol=el("ol","how"); tl.how.forEach(s=>ol.appendChild(el("li",null,s))); h.appendChild(ol); d.appendChild(h);
+  const v=el("details"); v.appendChild(el("summary",null,t("videos"))); const box=el("div","links");
+  const team=!tl.p;
+  [[t("latest"),t("newest"),yt(tl.n+" tutorial for beginners",true)],
+   [team?t("team"):t("founder"),t("newest"),yt(team?tl.n+" interview":tl.p+" interview",true)],
+   [t("courses"),t("byDevs"),yt(tl.n+" full course "+new Date().getFullYear(),false)]].forEach(([label,hint,href])=>{
+     const a=el("a",null,label); a.href=href; a.target="_blank"; a.rel="noopener"; a.appendChild(el("span",null,hint)); box.appendChild(a); });
+  v.appendChild(box); d.appendChild(v);
+  const o=el("a","btn btn-soft open",t("open",{n:tl.n})); o.href=tl.u; o.target="_blank"; o.rel="noopener";
+  o.addEventListener("click",()=>logEvent("tool_open",{tool:tl.n}));
+  d.appendChild(o);
+  const foot=el("div","foot"); const rep=el("button","linkbtn",t("report")); rep.hidden=true;
+  rep.onclick=async()=>{ rep.disabled=true; const ok=await logEvent("tool_report",{tool:tl.n}); rep.textContent= ok?t("reported"):t("report"); if(!ok) rep.hidden=true; };
+  logReady.then(db=>{ rep.hidden=!db; });
+  foot.append(el("span"), rep); d.appendChild(foot);
+  return d;
+}
+function renderTools(filter){
+  if(filter!==undefined) toolFilter=filter;
+  $("#toolsChecked").textContent=t("checked",{d:TOOLS_CHECKED});
+  const f=$("#filters"); f.innerHTML="";
+  ["All",...new Set(TOOLS.map(x=>x.c))].forEach(c=>{ const b=el("button","chip",c==="All"?t("allCount",{n:TOOLS.length}):c); b.setAttribute("aria-pressed",String(c===toolFilter)); b.onclick=()=>renderTools(c); f.appendChild(b); });
+  const q=toolQuery.trim().toLowerCase();
+  const list=TOOLS.filter(x=>(toolFilter==="All"||x.c===toolFilter)&&(!q||(x.n+" "+x.use+" "+x.c+" "+x.where).toLowerCase().includes(q)));
+  const g=$("#tools"); g.innerHTML=""; list.forEach(x=>g.appendChild(toolCard(x)));
+  $("#toolCount").textContent= !list.length ? t("noMatch") : list.length===1 ? t("showingOne") : t("showing",{n:list.length});
+}
+$("#toolSearch").addEventListener("input",e=>{toolQuery=e.target.value;renderTools()});
+
+/* ---------- certificates list ---------- */
+let certFilter="All";
+function renderCerts(filter){
+  if(filter!==undefined) certFilter=filter;
+  const f=$("#certFilters"); f.innerHTML="";
+  [["All","Everyone"],["Beginner","Complete beginners"],["Student","Students"]].forEach(([l,lab])=>{ const b=el("button","chip",lab); b.setAttribute("aria-pressed",String(l===certFilter)); b.onclick=()=>renderCerts(l); f.appendChild(b); });
+  $("#certChecked").textContent="Prices last checked: "+CERTS_CHECKED;
+  const pick=c=>certFilter==="All"||c.level===certFilter;
+  ["free","fee","exam"].forEach(kind=>{
+    const list=CERTS.filter(c=>c.kind===kind&&pick(c));
+    const sec=$("#sec-"+kind); sec.hidden=!list.length;
+    const g=sec.querySelector(".tools"); g.innerHTML="";
+    list.forEach(c=>{
+      const d=el("article","tool cert");
+      const pr=el("div","price-row"); pr.append(el("span","badge "+(kind==="free"?"free":"fee"), kind==="free"?"Free certificate":kind==="fee"?"Certificate fee":"Exam fee"), el("span","price",c.price)); d.appendChild(pr);
+      d.append(el("p","co",c.co), el("h3",null,c.name));
+      if(c.note) d.appendChild(el("p","warn",c.note));
+      d.append(el("p","job",c.what), el("p","facts",`${c.time}. Best for: ${c.level==="Student"?"students":"complete beginners"}.`));
+      const a=el("a","btn btn-soft",kind==="exam"?"See exam details":"Go to course"); a.href=c.url; a.target="_blank"; a.rel="noopener"; d.appendChild(a);
+      const has=earned.includes(c.name); const eb=el("button","btn btn-line btn-small earn", has?t("earnedYes"):t("earnedThis")); eb.setAttribute("aria-pressed",String(has));
+      eb.onclick=()=>{ const i=earned.indexOf(c.name); if(i<0){ earned.push(c.name); logEvent("cert_earned",{cert:c.name}); } else earned.splice(i,1); persist(); renderCerts(); renderCertPop(); };
+      d.appendChild(eb);
+      g.appendChild(d);
+    });
+  });
+}
+
+/* ---------- tool finder ---------- */
+const finder={goal:null, who:null, device:null};
+function chipGroup(id, keys, prefix, field){
+  const g=$("#"+id); g.innerHTML="";
+  keys.forEach(k=>{ const b=el("button","chip",t(prefix+k)); b.setAttribute("aria-pressed",String(finder[field]===k)); b.onclick=()=>{ finder[field]=k; chipGroup(id,keys,prefix,field); $("#fMsg").hidden=true; }; g.appendChild(b); });
+}
+function renderFinder(){
+  chipGroup("fGoal", Object.keys(GOALS), "g_", "goal");
+  chipGroup("fWho", ["student","job","business","teacher","any"], "w_", "who");
+  chipGroup("fDevice", ["phone","computer","both"], "d_", "device");
+  if(!$("#fResult").hidden) showFinder(false);
+}
+function showFinder(log=true){
+  if(!finder.goal||!finder.who||!finder.device){ const m=$("#fMsg"); m.textContent=t("quizMissing"); m.hidden=false; return; }
+  const g=GOALS[finder.goal]; const names=g[finder.who]||g.any;
+  const pool=[...names, ...g.any.filter(n=>!names.includes(n))].map(n=>TOOLS.find(x=>x.n===n)).filter(x=>x && !(x.notIn && x.notIn.includes(region)));
+  const phoneOk=x=>/iPhone|Android|WhatsApp/.test(x.where);
+  let picks = finder.device==="phone" ? pool.filter(phoneOk) : pool;
+  if(picks.length<3) picks=[...picks, ...pool.filter(x=>!picks.includes(x))];
+  picks=picks.slice(0,3);
+  const box=$("#fCards"); box.innerHTML=""; picks.forEach(x=>box.appendChild(toolCard(x)));
+  $("#fResult").hidden=false; applyStatic();
+  if(log){ $("#fResult").scrollIntoView({behavior:SMOOTH(),block:"start"}); logEvent("finder",{goal:finder.goal, who:finder.who, device:finder.device}); }
+}
+$("#fShow").onclick=()=>showFinder(true);
+
+/* ---------- templates ---------- */
+let tplFilter="all", tplKitchen=null;
+async function copyText(s){
+  try{ await navigator.clipboard.writeText(s); return true; }catch(e){
+    try{ const ta=el("textarea"); ta.value=s; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); const ok=document.execCommand("copy"); ta.remove(); return ok; }catch(e2){ return false; }
+  }
+}
+function renderTemplates(){
+  tplKitchen=makeKitchen($("#tplKitchen"),{label:t("kLabel")});
+  const f=$("#tplFilters"); f.innerHTML="";
+  ["all","students","job","business","teachers","everyday"].forEach(p=>{ const b=el("button","chip",t("p_"+p)); b.setAttribute("aria-pressed",String(p===tplFilter)); b.onclick=()=>{tplFilter=p; renderTemplatePacks(); f.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",String(c===b)));}; f.appendChild(b); });
+  renderTemplatePacks();
+}
+function renderTemplatePacks(){
+  const wrap=$("#tplPacks"); wrap.innerHTML="";
+  ["students","job","business","teachers","everyday"].filter(p=>tplFilter==="all"||p===tplFilter).forEach(p=>{
+    wrap.appendChild(el("h2","pack-title",t("p_"+p)));
+    const g=el("div","tools");
+    TEMPLATES.filter(x=>x.pack===p).forEach(x=>{
+      const c=el("article","tpl"); c.append(el("h3",null,x.title), el("pre",null,x.text));
+      const r=el("div","row"); const cp=el("button","btn btn-soft btn-small",t("copy")), pr=el("button","btn btn-line btn-small",t("practice"));
+      cp.onclick=async()=>{ const ok=await copyText(x.text); cp.textContent= ok?t("copied"):t("copy"); if(ok) setTimeout(()=>cp.textContent=t("copy"),1600); };
+      pr.onclick=()=>tplKitchen&&tplKitchen.setText(x.text);
+      r.append(cp,pr); c.appendChild(r); g.appendChild(c);
+    });
+    wrap.appendChild(g);
+  });
+}
+
+/* ---------- my certificate ---------- */
+let certBlob=null;
+function renderMyCert(){
+  const ready=done.length>=N;
+  $("#certLocked").hidden=ready; $("#certReady").hidden=!ready;
+  $("#certLockedText").textContent=t("certLocked",{d:done.length});
+  const inp=$("#certName"); if(!inp.value) inp.value=store.get("askwell-name")||displayName()||"";
+}
+function wrapText(ctx, text, x, y, maxW, lh){ const words=text.split(" "); let line=""; for(const w of words){ const test=line?line+" "+w:w; if(ctx.measureText(test).width>maxW&&line){ ctx.fillText(line,x,y); line=w; y+=lh; } else line=test; } ctx.fillText(line,x,y); }
+async function drawCert(name){
+  try{ await document.fonts.ready; }catch(e){}
+  const W=1600,H=1130, c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
+  x.fillStyle="#FFFFFF"; x.fillRect(0,0,W,H);
+  x.fillStyle="#1F2A5C"; x.fillRect(0,0,W,26); x.fillRect(0,H-26,W,26);
+  x.strokeStyle="#D9DFEA"; x.lineWidth=4; x.strokeRect(60,70,W-120,H-140);
+  x.textAlign="center"; x.fillStyle="#1F2A5C";
+  const disp='"Bricolage Grotesque","Noto Sans Devanagari","Noto Sans Telugu","Noto Sans Arabic",sans-serif', body='"Atkinson Hyperlegible","Noto Sans Devanagari","Noto Sans Telugu","Noto Sans Arabic",sans-serif';
+  x.font=`800 64px ${disp}`; x.fillText("AskWell",W/2-12,190);
+  const bw=x.measureText("AskWell").width; x.fillStyle="#F2B705"; x.beginPath(); x.arc(W/2-12+bw/2+20,176,12,0,Math.PI*2); x.fill(); x.fillStyle="#1F2A5C";
+  x.fillStyle="#5B6478"; x.font=`700 34px ${body}`; x.fillText("Certificate of Completion",W/2,290);
+  x.font=`400 32px ${body}`; x.fillText("This certifies that",W/2,390);
+  x.fillStyle="#1F2A5C"; let size=96; x.font=`800 ${size}px ${disp}`; while(x.measureText(name).width>W-300&&size>40){ size-=4; x.font=`800 ${size}px ${disp}`; }
+  x.direction=/[\u0590-\u08FF]/.test(name)?"rtl":"ltr"; x.fillText(name,W/2,520); x.direction="ltr";
+  x.strokeStyle="#F2B705"; x.lineWidth=5; x.beginPath(); x.moveTo(W/2-260,560); x.lineTo(W/2+260,560); x.stroke();
+  x.fillStyle="#22283A"; x.font=`400 34px ${body}`;
+  wrapText(x,"has completed all 7 lessons of AskWell, learning to use Claude and other AI tools clearly, carefully, and safely.",W/2,650,W-420,50);
+  const date=new Date().toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"});
+  x.fillStyle="#5B6478"; x.font=`400 28px ${body}`;
+  x.fillText("Completed on "+date,W/2,850);
+  const id="AW-"+Date.now().toString(36).toUpperCase().slice(-6);
+  x.font=`400 24px ${body}`; x.fillText("Certificate ID "+id,W/2,930);
+  x.font=`400 22px ${body}`; x.fillText("Lessons: Meet Claude · The four ingredients · Give it context · Follow-ups · Check its work · Everyday wins · Stay safe",W/2,975);
+  return c;
+}
+$("#makeCert").onclick=async()=>{
+  const name=$("#certName").value.trim(); const msg=$("#certMsg");
+  if(!name){ msg.textContent=t("nameNeeded"); $("#certName").focus(); return; }
+  store.set("askwell-name",name);
+  const c=await drawCert(name); const img=$("#certImg"); img.src=c.toDataURL("image/png"); img.alt="Certificate of Completion for "+name; img.hidden=false;
+  certBlob=await new Promise(r=>c.toBlob(r,"image/png"));
+  const dl=await dlP; $("#dlCert").hidden=!dl; msg.textContent= dl ? "" : t("saveHint");
+  logEvent("certificate_made");
+};
+$("#dlCert").onclick=async()=>{
+  const dl=await dlP; const msg=$("#certMsg"); if(!dl||!certBlob) return;
+  try{ const r=await dl.save({filename:"AskWell-certificate.png", data:certBlob}); if(r&&r.status==="saved") msg.textContent=t("saved"); }
+  catch(e){ if(e&&e.code==="unavailable"){ $("#dlCert").hidden=true; msg.textContent=t("saveHint"); } }
+};
+
+/* ---------- account, profile, sync ---------- */
+let profile = (()=>{ try{ return JSON.parse(store.get("askwell-profile"))||null }catch(e){ return null } })();
+let earned = (()=>{ try{ const e=JSON.parse(store.get("askwell-earned")); return Array.isArray(e)?e:[] }catch(e){ return [] } })();
+let claudeMe = null, syncDb = null;
+function persist(){
+  store.set("askwell-earned", JSON.stringify(earned)); saveDone();
+  if(syncDb && claudeMe) syncDb.collection("data/users/"+claudeMe.id).doc("state").set({done, earned, at:new Date().toISOString()}).catch(()=>{});
+}
+const accountReady = (async()=>{
+  const u=await userP; if(!u) return;
+  try{ const me=await u.me(); if(me && me.id) claudeMe={id:me.id, name:me.name||""}; }catch(e){}
+  if(!claudeMe) return;
+  const db=await logReady; if(!db) return;
+  syncDb=db;
+  try{
+    const snap=await db.collection("data/users/"+claudeMe.id).doc("state").get();
+    if(snap.exists){ const d=snap.data()||{};
+      (d.done||[]).forEach(i=>{ if(Number.isInteger(i)&&i>=0&&i<N&&!done.includes(i)) done.push(i); });
+      (d.earned||[]).forEach(n=>{ if(typeof n==="string"&&!earned.includes(n)) earned.push(n); });
+    }
+    persist();
+  }catch(e){ syncDb=null; }
+})();
+const displayName = () => (claudeMe && claudeMe.name) || (profile && profile.name) || "";
+function certCount(){ return (done.length>=N?1:0) + earned.filter(n=>CERTS.some(c=>c.name===n)).length; }
+
+/* ---------- popovers (language + my certifications) ---------- */
+function closePops(except){ document.querySelectorAll(".pop").forEach(p=>{ if(p!==except){ p.querySelector(".pop-panel").hidden=true; const b=p.querySelector(".pop-btn"); b.setAttribute("aria-expanded","false"); const c=b.querySelector(".chev"); if(c) c.textContent="▾"; } }); }
+function togglePop(pop){
+  const panel=pop.querySelector(".pop-panel"), btn=pop.querySelector(".pop-btn"), open=panel.hidden;
+  closePops(pop); panel.hidden=!open; btn.setAttribute("aria-expanded",String(open));
+  const c=btn.querySelector(".chev"); if(c) c.textContent= open ? "▴" : "▾";
+  if(open){ const first=panel.querySelector("[aria-selected='true'],button,a"); first&&first.focus(); }
+}
+document.addEventListener("click",e=>{ if(!e.target.closest(".pop")) closePops(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ const open=document.querySelector(".pop-panel:not([hidden])"); if(open){ const b=open.parentElement.querySelector(".pop-btn"); closePops(); b.focus(); } } });
+
+function renderLangPick(){
+  const cur=LANGS.find(l=>l[0]===lang);
+  const btn=$("#langBtn"); btn.innerHTML=""; btn.append(el("span",null,"🌐 "), el("span",null,cur[1]), el("span","chev","▾"));
+  btn.setAttribute("aria-label",t("langLabel")+": "+cur[1]);
+  const list=$("#langList"); list.innerHTML=""; list.setAttribute("aria-label",t("chooseLang"));
+  LANGS.forEach(([c,n])=>{
+    const o=el("button","pop-item",n); o.setAttribute("role","option"); o.lang=c; o.setAttribute("aria-selected",String(c===lang));
+    o.onclick=()=>{ closePops(); if(c===lang) return; lang=c; store.set("askwell-lang",lang); if(profile){ profile.lang=lang; store.set("askwell-profile",JSON.stringify(profile)); } stopSpeech(); renderAll(); route(); $("#langBtn").focus(); };
+    list.appendChild(o);
+  });
+}
+$("#langBtn").addEventListener("click",e=>{ e.stopPropagation(); togglePop($("#langPop")); });
+$("#langList").addEventListener("keydown",e=>{
+  const items=[...$("#langList").querySelectorAll(".pop-item")], i=items.indexOf(document.activeElement);
+  if(e.key==="ArrowDown"){ e.preventDefault(); items[(i+1)%items.length].focus(); }
+  if(e.key==="ArrowUp"){ e.preventDefault(); items[(i-1+items.length)%items.length].focus(); }
+});
+
+function renderCertPop(){
+  const n=certCount();
+  const btn=$("#certBtn"); btn.innerHTML=""; btn.append(el("span",null,"🎓 "+t("myCerts")+" "), el("span","count",String(n)), el("span","chev","▾"));
+  const panel=$("#certPanel"); panel.innerHTML="";
+  panel.appendChild(el("p","pop-title",t("myCerts")));
+  const list=[];
+  if(done.length>=N) list.push({name:t("askwellCert"), href:"#my-certificate"});
+  earned.forEach(nm=>{ const c=CERTS.find(x=>x.name===nm); if(c) list.push({name:c.name, co:c.co, href:"#certificates"}); });
+  if(!list.length){
+    panel.appendChild(el("p","pop-empty",t("noCerts")));
+    const a=el("a","btn btn-primary btn-small",t("completeCourses")); a.href="#certificates"; panel.appendChild(a);
+    const l=el("a","pop-link",t("earnAskwell")); l.href="#home"; panel.appendChild(l);
+  } else {
+    const ul=el("ul","pop-list");
+    list.forEach(x=>{ const li=el("li"); const a=el("a",null,x.name); a.href=x.href; li.appendChild(a); if(x.co) li.appendChild(el("span",null," · "+x.co)); ul.appendChild(li); });
+    panel.appendChild(ul);
+    const a=el("a","pop-link",t("completeCourses")); a.href="#certificates"; panel.appendChild(a);
+  }
+  panel.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>closePops()));
+}
+$("#certBtn").addEventListener("click",e=>{ e.stopPropagation(); togglePop($("#certPop")); });
+
+function renderAccountBtn(){
+  const a=$("#acctBtn"); const nm=displayName();
+  a.textContent = nm ? "👤 "+nm.split(" ")[0] : t("account");
+}
+
+/* ---------- account page ---------- */
+function renderAccount(msg){
+  const v=$("#acctBody"); v.innerHTML="";
+  v.appendChild(el("h1",null,t("accTitle")));
+  if(msg) v.appendChild(el("p","quiz-msg ok",msg));
+  const grid=el("div","acct-grid");
+  // Claude account card
+  const c1=el("section","acct-card"); c1.appendChild(el("h2",null,t("claudeTitle")));
+  if(claudeMe){
+    c1.appendChild(el("p","lede", claudeMe.name ? t("claudeOn",{n:claudeMe.name}) : t("claudeOnNoName")));
+    c1.appendChild(el("p",null, syncDb ? t("claudeSync") : t("claudeLocal")));
+  } else c1.appendChild(el("p",null,t("claudeOff")));
+  grid.appendChild(c1);
+  // Local profile card
+  const c2=el("section","acct-card");
+  if(profile){
+    c2.append(el("h2",null,t("profileTitle")), el("p","lede",t("hello",{n:profile.name})));
+  } else c2.append(el("h2",null,t("signupTitle")), el("p",null,t("signupSub")));
+  const form=el("form"); form.noValidate=true;
+  const f1=el("label","field"); f1.append(el("span",null,t("yourName"))); const nm=el("input"); nm.type="text"; nm.required=true; nm.maxLength=60; nm.autocomplete="name"; nm.value=profile?profile.name:""; f1.appendChild(nm);
+  const f2=el("label","field"); f2.append(el("span",null,t("langLabel"))); const ls=el("select"); LANGS.forEach(([c,n])=>{ const o=el("option",null,n); o.value=c; ls.appendChild(o); }); ls.value=lang; f2.appendChild(ls);
+  const f3=el("label","field"); f3.append(el("span",null,t("countryLabel"))); const rs=el("select"); let dn=null; try{ dn=new Intl.DisplayNames([lang],{type:"region"}); }catch(e){}
+  Object.keys(REGIONS).forEach(c=>{ const o=el("option",null, c==="OT"?t("countryOther"):(dn?dn.of(c):c)); o.value=c; rs.appendChild(o); }); rs.value=region; f3.appendChild(rs);
+  const err=el("p","quiz-msg bad"); err.hidden=true;
+  const sub=el("button","btn btn-primary", profile ? t("edit") : t("create")); sub.type="submit";
+  form.append(f1,f2,f3,err,sub);
+  form.onsubmit=e=>{
+    e.preventDefault(); const name=nm.value.trim();
+    if(!name){ err.textContent=t("nameNeeded"); err.hidden=false; nm.focus(); return; }
+    const isNew=!profile; profile={name, lang:ls.value, region:rs.value};
+    store.set("askwell-profile",JSON.stringify(profile)); if(!store.get("askwell-name")) store.set("askwell-name",name);
+    lang=ls.value; region=rs.value; store.set("askwell-lang",lang); store.set("askwell-region",region);
+    if(isNew) logEvent("signup");
+    renderAll(); renderAccount(isNew ? t("created") : t("savedP"));
+  };
+  c2.appendChild(form);
+  c2.appendChild(el("p","note",t("localNote")));
+  if(profile){
+    const lo=el("button","btn btn-line btn-small",t("logout")); let armed=false;
+    lo.onclick=()=>{
+      if(!armed){ armed=true; lo.textContent=t("logoutConfirm"); setTimeout(()=>{ armed=false; lo.textContent=t("logout"); },4000); return; }
+      ["askwell-profile","askwell-earned","askwell-progress-v1","askwell-name"].forEach(k=>{ try{ localStorage.removeItem(k) }catch(e){} });
+      profile=null; earned=[]; done.length=0; renderAll(); renderAccount(t("loggedOut"));
+    };
+    c2.appendChild(lo);
+  }
+  grid.appendChild(c2); v.appendChild(grid);
+}
+
+/* ---------- routing ---------- */
+const VIEWS=["home","lesson","finder","templates","tools","certificates","my-certificate","about","account"];
+function route(){
+  const h=(location.hash||"#home").slice(1);
+  const m=h.match(/^lesson-(\d+)$/);
+  const view = m&&LESSONS[m[1]-1] ? "lesson" : (VIEWS.includes(h)&&h!=="lesson" ? h : "home");
+  if(view!=="lesson") stopSpeech();
+  document.querySelectorAll(".view").forEach(v=>v.hidden = v.id!=="view-"+view);
+  document.querySelectorAll("[data-nav]").forEach(a=>a.removeAttribute("aria-current"));
+  const nav=document.querySelector(`[data-nav="${view==="lesson"?"home":view}"]`); nav&&nav.setAttribute("aria-current","page");
+  if(view==="lesson") renderLesson(+m[1]-1);
+  if(view==="my-certificate") renderMyCert();
+  if(view==="account") renderAccount();
+  closePops();
+  window.scrollTo(0,0);
+}
+function renderAll(){
+  applyStatic(); renderLangPick(); renderMeter(); renderPath();
+  makeKitchen($("#heroKitchen"),{label:t("kLabelHero")});
+  renderTools(); renderCerts(); renderFinder(); renderTemplates();
+}
+$("#regionSel").addEventListener("change",e=>{ region=e.target.value; store.set("askwell-region",region); renderAll(); route(); $("#regionSel").focus(); });
+$("#sizeGroup").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; textSize=+b.dataset.size; store.set("askwell-size",String(textSize)); applyStatic(); });
+$("#skipLink").addEventListener("click",e=>{ e.preventDefault(); $("#main").focus(); });
+renderAll();
+window.addEventListener("hashchange",route); route();
+accountReady.then(()=>{ renderMeter(); renderPath(); if(location.hash==="#account") renderAccount(); if(/^#lesson-/.test(location.hash)) route(); });
+
+</script>
+</body>
+</html>
